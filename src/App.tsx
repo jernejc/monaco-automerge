@@ -1,94 +1,40 @@
-import React, { useEffect, useRef } from 'react';
+import { faker } from '@faker-js/faker';
 
-import * as monaco from "monaco-editor";
-import Editor, { OnChange, OnMount } from '@monaco-editor/react';
+import { AutomergeUrl, DocHandle, isValidAutomergeUrl } from "@automerge/automerge-repo";
+import { useRepo } from '@automerge/automerge-repo-react-hooks';
 
-import { AutomergeUrl, DocHandle } from "@automerge/automerge-repo";
-import { useDocument, useLocalAwareness, useRemoteAwareness } from '@automerge/automerge-repo-react-hooks';
+import { MonacoEditor } from "./components/editor/MonacoEditor";
 
-import { cursorUpdate } from './monaco/cursorUpdate';
-import { selectionUpdate } from './monaco/selectionUpdate';
+import { State, User } from "./types";
+import { Header } from './components/header/Header';
 
-import { State } from "./types";
+export default function App() {
+  const repo = useRepo()
 
-export default function App({ url, handle, userId }: { url: AutomergeUrl, handle: DocHandle<State>, userId: string }) {
-  const editorRef = useRef<any>(null);
+  const rootDocUrl: string = `${document.location.hash.substring(1)}`
 
-  const [doc, changeDoc] = useDocument<State>(url);
-
-  const [localState, updateLocalState] = useLocalAwareness({
-    handle,
-    userId: userId,
-    initialState: {},
-  });
-
-  const [peerStates] = useRemoteAwareness({
-    handle,
-    localUserId: userId,
-  });
-
-  const handleEditorChange: OnChange = (value: string | undefined) => {
-    changeDoc((current) => {
-      current.text = value || '';
-    });
-  };
-
-  const handleEditorMount: OnMount = (editor: monaco.editor.ICodeEditor) => {
-    editorRef.current = editor;
-
-    if (editorRef.current) {
-      editorRef.current.onDidChangeCursorPosition(() => {
-        const position: monaco.IPosition = editorRef.current.getPosition();
-        updateLocalState(state => ({ ...state, position }));
-      });
-
-      editorRef.current.onDidChangeCursorSelection(() => {
-        const selection: monaco.ISelection = editorRef.current.getSelection();
-        updateLocalState(state => ({ ...state, selection }));
-      });
-    }
+  const user: User = {
+    id: faker.string.uuid(),
+    name: faker.internet.displayName(),
+    email: faker.internet.email(),
+    avatar: faker.image.avatar(),
+    color: faker.color.rgb()
   }
 
-  useEffect(() => {
-    if (peerStates && editorRef.current) {
-      for (let peer in peerStates) {
-        const { position, selection } = peerStates[peer];
+  let handle: DocHandle<State>
 
-        if (position) {
-          cursorUpdate(editorRef.current, position, peer)
-        } if (selection) {
-          const start: monaco.IPosition = {
-            column: selection.startColumn,
-            lineNumber: selection.startLineNumber
-          }
+  if (isValidAutomergeUrl(rootDocUrl)) {
+    handle = repo.find(rootDocUrl)
+  } else {
+    handle = repo.create<State>({ text: '' })
+  }
 
-          const end: monaco.IPosition = {
-            column: selection.endColumn,
-            lineNumber: selection.endLineNumber
-          }
-
-          selectionUpdate(editorRef.current, start, end, peer)
-        }
-      }
-    }
-  }, [peerStates]);
-
-  /*useEffect(() => {
-    console.log('useEffect localState', localState);
-  }, [localState]);*/
+  const docUrl: AutomergeUrl = (document.location.hash = handle.url)
 
   return (
-    <div className='bg-neutral-800 w-full h-full'>
-      <Editor
-        className='py-4'
-        height="100vh"
-        defaultLanguage="javascript"
-        defaultValue="// type your code... \n"
-        theme='vs-dark'
-        value={doc?.text}
-        onChange={handleEditorChange}
-        onMount={handleEditorMount}
-      />
+    <div className='bg-neutral-800 text-white'>
+      <Header handle={handle} user={user} />
+      <MonacoEditor url={docUrl} handle={handle} user={user} />
     </div>
   );
 }

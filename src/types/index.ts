@@ -1,3 +1,5 @@
-export interface State {
+export * from './user'
+
+export type State = {
   text: string
 }
