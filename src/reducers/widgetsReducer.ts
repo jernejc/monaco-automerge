@@ -1,7 +1,7 @@
 
 import { editor, IPosition } from "monaco-editor";
 
-import { CursorWidget } from '../helpers/monaco/widget';
+import { CursorWidget } from '../helpers/monaco/cursor';
 import { User } from '../types';
 
 export enum WidgetActionType {
@@ -11,7 +11,7 @@ export enum WidgetActionType {
 }
 
 export type WidgetAction = {
-  type: string;
+  type: WidgetActionType;
   user?: User;
   position?: IPosition;
   editor?: editor.ICodeEditor;

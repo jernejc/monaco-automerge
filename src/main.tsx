@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { Repo } from "@automerge/automerge-repo"
@@ -12,15 +12,13 @@ import './main.css';
 
 const repo: Repo = new Repo({
   network: [
-    new BroadcastChannelNetworkAdapter(),
+    //new BroadcastChannelNetworkAdapter(),
     new BrowserWebSocketClientAdapter('wss://sync.automerge.org')
   ],
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <RepoContext.Provider value={repo}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+    <App />
   </RepoContext.Provider>,
 )
