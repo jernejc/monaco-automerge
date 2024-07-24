@@ -29,12 +29,12 @@ export default function App() {
     handle = repo.create<State>({ text: '' })
   }
 
-  const docUrl: AutomergeUrl = (document.location.hash = handle.url)
+  document.location.hash = handle.url // update the URL
 
   return (
     <div className='bg-neutral-800 text-white'>
       <Header handle={handle} user={user} />
-      <MonacoEditor url={docUrl} handle={handle} user={user} />
+      <MonacoEditor handle={handle} user={user} />
     </div>
   );
 }

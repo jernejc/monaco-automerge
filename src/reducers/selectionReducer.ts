@@ -4,20 +4,26 @@ import { editor, Selection } from "monaco-editor";
 import { SelectionDecoration } from '../helpers/monaco/selection';
 import { User } from '../types';
 
-type Action = {
-  type: string;
+export enum SelectionActionType {
+  UPSERT = 'upsert',
+  REMOVE = 'remove',
+  CLEAR_UNACTIVE = 'clearUnactive'
+}
+
+export type SelectionAction = {
+  type: SelectionActionType;
   user?: User;
   selection?: Selection;
   editor?: editor.ICodeEditor;
   activePeers?: string[];
 }
 
-export function selectionReducer(selections: SelectionDecoration[], action: Action) {
+export function selectionReducer(selections: SelectionDecoration[], action: SelectionAction) {
 
   selections = selections || [];
 
   switch (action.type) {
-    case 'upsert':
+    case SelectionActionType.UPSERT:
       const existingItem = findExisting(selections, action.user!);
 
       if (existingItem) {
@@ -30,16 +36,16 @@ export function selectionReducer(selections: SelectionDecoration[], action: Acti
         ...selections,
         new SelectionDecoration(action.editor!, action.user!, action.selection!)
       ];
-    case 'remove':
+    case SelectionActionType.REMOVE:
       const removeItem = findExisting(selections, action.user!);
 
       if (removeItem) {
         removeItem.dispose();
-        return selections.filter((t) => t.user.id !== action.user!.id);
+        return selections.filter((selection: SelectionDecoration) => !selection.disposed);
       }
 
       return selections
-    case 'clearUnactive':
+    case SelectionActionType.CLEAR_UNACTIVE:
       selections.forEach((selection: SelectionDecoration) => {
         if (!action.activePeers?.includes(selection.user.id))
           selection.dispose();

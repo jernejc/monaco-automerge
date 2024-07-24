@@ -6,6 +6,7 @@ type IConfiguration = {
 }
 
 /**
+ * 
  * This class implements a Monaco Content Widget to render a remote user's
  * cursor, and an optional tooltip.
  * 

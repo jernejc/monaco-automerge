@@ -3,18 +3,18 @@ import { useEffect, useReducer, useRef } from 'react';
 import { editor, IPosition, Selection } from "monaco-editor";
 import Editor, { OnChange, OnMount } from '@monaco-editor/react';
 
-import { AutomergeUrl, DocHandle } from "@automerge/automerge-repo";
-import { useDocument, useLocalAwareness, useRemoteAwareness, useRepo } from '@automerge/automerge-repo-react-hooks';
+import { DocHandle } from "@automerge/automerge-repo";
+import { useDocument, useLocalAwareness, useRemoteAwareness } from '@automerge/automerge-repo-react-hooks';
 
-import { selectionReducer } from '../../reducers/selectionReducer';
-import { widgetsReducer } from '../../reducers/widgetsReducer';
+import { SelectionActionType, selectionReducer } from '../../reducers/selectionReducer';
+import { WidgetActionType, widgetsReducer } from '../../reducers/widgetsReducer';
 
 import { State, User } from "../../types";
 
-export function MonacoEditor({ url, handle, user }: { url: AutomergeUrl, handle: DocHandle<State>, user: User }) {
+export function MonacoEditor({ handle, user }: { handle: DocHandle<State>, user: User }) {
   const editorRef = useRef<any>(null);
 
-  const [doc, changeDoc] = useDocument<State>(url);
+  const [doc, changeDoc] = useDocument<State>(handle.url);
 
   const [widgets, dispatchWidgets] = useReducer(widgetsReducer, []);
   const [selections, dispatchSelections] = useReducer(selectionReducer, []);
@@ -75,7 +75,7 @@ export function MonacoEditor({ url, handle, user }: { url: AutomergeUrl, handle:
 
         if (position) {
           dispatchWidgets({
-            type: 'upsert',
+            type: WidgetActionType.UPSERT,
             user,
             position,
             editor: editorRef.current
@@ -83,7 +83,7 @@ export function MonacoEditor({ url, handle, user }: { url: AutomergeUrl, handle:
         }
         if (selection) {
           dispatchSelections({
-            type: 'upsert',
+            type: SelectionActionType.UPSERT,
             user,
             selection,
             editor: editorRef.current
@@ -92,12 +92,6 @@ export function MonacoEditor({ url, handle, user }: { url: AutomergeUrl, handle:
       }
     }
   }, [peerStates]);
-
-  useEffect(() => {
-    if (editorRef.current) {
-      updateLocalPosition(editorRef.current);
-    }
-  }, [doc]);
 
   return (
     <div className='w-full h-full'>

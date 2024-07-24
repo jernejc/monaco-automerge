@@ -4,7 +4,13 @@ import { editor, IPosition } from "monaco-editor";
 import { CursorWidget } from '../helpers/monaco/widget';
 import { User } from '../types';
 
-type Action = {
+export enum WidgetActionType {
+  UPSERT = 'upsert',
+  REMOVE = 'remove',
+  CLEAR_UNACTIVE = 'clearUnactive'
+}
+
+export type WidgetAction = {
   type: string;
   user?: User;
   position?: IPosition;
@@ -12,12 +18,12 @@ type Action = {
   activePeers?: string[];
 }
 
-export function widgetsReducer(widgets: CursorWidget[], action: Action): CursorWidget[] {
+export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): CursorWidget[] {
 
   widgets = widgets || [];
 
   switch (action.type) {
-    case 'upsert':
+    case WidgetActionType.UPSERT:
       const existingItem = findExisting(widgets, action.user!);
 
       if (existingItem) {
@@ -29,18 +35,18 @@ export function widgetsReducer(widgets: CursorWidget[], action: Action): CursorW
         ...widgets,
         new CursorWidget(action.editor!, action.user!, action.position!)
       ];
-    case 'remove':
+    case WidgetActionType.REMOVE:
       const removeItem = findExisting(widgets, action.user!);
 
       if (removeItem) {
         removeItem.dispose();
-        return widgets.filter((t) => t.user.id !== action.user!.id);
+        return widgets.filter((widget: CursorWidget) => !widget.disposed);
       }
 
       return widgets
-    case 'clearUnactive':
+    case WidgetActionType.CLEAR_UNACTIVE:
       widgets.forEach((widget: CursorWidget) => {
-        if (!action.activePeers?.includes(widget.user.id)) 
+        if (!action.activePeers?.includes(widget.user.id))
           widget.dispose();
       });
 
