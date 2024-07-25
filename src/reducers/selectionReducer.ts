@@ -1,13 +1,13 @@
 
 import { editor, Selection } from "monaco-editor";
 
-import { SelectionDecoration } from '../helpers/monaco/selection';
-import { User } from '../types';
+import { SelectionDecoration } from "../helpers/monaco/objects/selection";
+import { User } from "../types";
 
 export enum SelectionActionType {
-  UPSERT = 'upsert',
-  REMOVE = 'remove',
-  CLEAR_UNACTIVE = 'clearUnactive'
+  UPSERT = "upsert",
+  REMOVE = "remove",
+  CLEAR_UNACTIVE = "clearUnactive"
 }
 
 export type SelectionAction = {
@@ -19,9 +19,7 @@ export type SelectionAction = {
 }
 
 export function selectionReducer(selections: SelectionDecoration[], action: SelectionAction) {
-
-  selections = selections || [];
-
+  
   switch (action.type) {
     case SelectionActionType.UPSERT:
       const existingItem = findExisting(selections, action.user!);
@@ -47,13 +45,13 @@ export function selectionReducer(selections: SelectionDecoration[], action: Sele
       return selections
     case SelectionActionType.CLEAR_UNACTIVE:
       selections.forEach((selection: SelectionDecoration) => {
-        if (!action.activePeers?.includes(selection.user.id))
+        if (!action.activePeers || !action.activePeers?.includes(selection.user.id))
           selection.dispose();
       });
 
       return selections.filter((selection: SelectionDecoration) => !selection.disposed);
     default:
-      throw Error('Unknown action: ' + action.type);
+      throw Error("Unknown action: " + action.type);
   }
 }
 

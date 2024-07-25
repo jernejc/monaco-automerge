@@ -1,13 +1,13 @@
 
 import { editor, IPosition } from "monaco-editor";
 
-import { CursorWidget } from '../helpers/monaco/cursor';
-import { User } from '../types';
+import { CursorWidget } from "../helpers/monaco/objects/cursor";
+import { User } from "../types";
 
 export enum WidgetActionType {
-  UPSERT = 'upsert',
-  REMOVE = 'remove',
-  CLEAR_UNACTIVE = 'clearUnactive'
+  UPSERT = "upsert",
+  REMOVE = "remove",
+  CLEAR_UNACTIVE = "clearUnactive"
 }
 
 export type WidgetAction = {
@@ -19,9 +19,8 @@ export type WidgetAction = {
 }
 
 export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): CursorWidget[] {
-
-  widgets = widgets || [];
-
+  //console.log("widgetsReducer", action);
+  
   switch (action.type) {
     case WidgetActionType.UPSERT:
       const existingItem = findExisting(widgets, action.user!);
@@ -45,14 +44,14 @@ export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): C
 
       return widgets
     case WidgetActionType.CLEAR_UNACTIVE:
-      widgets.forEach((widget: CursorWidget) => {
-        if (!action.activePeers?.includes(widget.user.id))
+      widgets.forEach((widget: CursorWidget) => {        
+        if (!action.activePeers || !action.activePeers?.includes(widget.user.id))
           widget.dispose();
       });
 
       return widgets.filter((widget: CursorWidget) => !widget.disposed);
     default:
-      throw Error('Unknown action: ' + action.type);
+      throw Error("Unknown action: " + action.type);
   }
 }
 

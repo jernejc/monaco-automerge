@@ -1,10 +1,10 @@
 
 import { editor, Range, IPosition, Selection } from "monaco-editor";
-import { User } from "../../types";
+import { User } from "../../../types";
 
 /**
  * 
- * A Monaco Editor Delta Decoration to render a remote user's selection.
+ * A Monaco Editor Delta Decoration to render a remote user"s selection.
  * 
  * Based on: https://github.com/convergencelabs/monaco-collab-ext/blob/master/src/ts/RemoteSelection.ts
  *

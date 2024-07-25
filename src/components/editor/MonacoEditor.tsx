@@ -3,40 +3,41 @@ import { useEffect, useReducer, useRef } from "react";
 import { editor, IPosition, Selection } from "monaco-editor";
 import Editor, { OnChange, OnMount } from "@monaco-editor/react";
 
-import { DocHandle } from "@automerge/automerge-repo";
-import { updateText } from '@automerge/automerge/next';
+import { DocHandle, Patch } from "@automerge/automerge-repo";
+import { updateText } from "@automerge/automerge/next";
 import { useDocument, useLocalAwareness, useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
 import { SelectionActionType, selectionReducer } from "../../reducers/selectionReducer";
 import { WidgetActionType, widgetsReducer } from "../../reducers/widgetsReducer";
 import { ContentActionType, editorContentReducer } from "../../reducers/editorContentReducer";
 
+import { Document, User } from "../../types";
+import { removeEventLog } from "../../helpers/monaco/removeEventLog";
+
 import { CircularSpinner } from "./CircularSpinner";
 
-import { Document, User } from "../../types";
+export function MonacoEditor({ user, handle }: { user: User, handle: DocHandle<Document> }) {
 
-export function MonacoEditor({ handle, user }: { handle: DocHandle<Document>, user: User }) {
-
-  const editorRef = useRef<any>(null);
-  const suspense = useRef<boolean>(false);
-  const head = useRef<string>('');
-
-  const [doc, changeDoc] = useDocument<Document>(handle.url);
-
-  const [widgets, dispatchWidgets] = useReducer(widgetsReducer, []);
-  const [selections, dispatchSelections] = useReducer(selectionReducer, []);
-  const [editorContent, dispatchEditorContent] = useReducer(editorContentReducer, '');
-
+  const [doc, changeDoc] = useDocument<Document>(handle?.url);
   const [localState, updateLocalState] = useLocalAwareness({
     handle,
     userId: user.id,
     initialState: {},
+    heartbeatTime: 5000
   });
 
   const [peerStates] = useRemoteAwareness({
     handle,
     localUserId: user.id,
+    offlineTimeout: 10000
   });
+
+  const editorRef = useRef<any>(null);
+  const editEvents = useRef<string[]>([]);
+
+  const [widgets, dispatchWidgets] = useReducer(widgetsReducer, []);
+  const [selections, dispatchSelections] = useReducer(selectionReducer, []);
+  const [head, dispatchEditorContent] = useReducer(editorContentReducer, "");
 
   const updateLocalPosition = (editor: editor.ICodeEditor) => {
     const position: IPosition | null = editor.getPosition();
@@ -54,17 +55,14 @@ export function MonacoEditor({ handle, user }: { handle: DocHandle<Document>, us
     updateLocalState((state: any) => ({ ...state, selection, user }));
   }
 
-  const handleEditorChange: OnChange = (value: string | undefined) => {
-    if (suspense.current) {
-      suspense.current = false;
-      return
-    }
+  const handleEditorChange: OnChange = (value: string | undefined, ev: editor.IModelContentChangedEvent) => {
+    if (removeEventLog(editEvents.current, "remote")) return
 
-    if (!value) return;
+    if (ev.isFlush) return;
+    if (value === undefined) return;
 
-    changeDoc(doc => updateText(doc, ['text'], value));
-
-    suspense.current = true;
+    changeDoc(doc => updateText(doc, ["text"], value));
+    editEvents.current.push("local");
   }
 
   const handleEditorMount: OnMount = (editor: editor.ICodeEditor) => {
@@ -83,7 +81,7 @@ export function MonacoEditor({ handle, user }: { handle: DocHandle<Document>, us
     }
   }
 
-  useEffect(() => {
+  useEffect(() => {   
     if (peerStates && editorRef.current) {
       for (let peer in peerStates) {
         const { position, selection, user } = peerStates[peer];
@@ -106,61 +104,54 @@ export function MonacoEditor({ handle, user }: { handle: DocHandle<Document>, us
         }
       }
     }
+
+    dispatchWidgets({
+      type: WidgetActionType.CLEAR_UNACTIVE,
+      activePeers: Object.keys(peerStates)
+    });
   }, [peerStates]);
 
-  useEffect(() => {
-    if (doc) {
-      const metaSymbol = Object.getOwnPropertySymbols(doc).find(
+  useEffect(() => { // move this whole thing somewhere
+    if (removeEventLog(editEvents.current, "local"))
+      return
+
+    if (doc && editorRef.current) {
+      const currentText: string = editorRef.current.getValue();
+
+      if (currentText === doc.text) return;
+
+      const metaSymbol: symbol | undefined = Object.getOwnPropertySymbols(doc).find(
+        // @ts-ignore
         (s) => doc[s].mostRecentPatch
       );
 
       if (metaSymbol === undefined) return;
 
-      const metaData = doc[metaSymbol];
+      // @ts-ignore
+      const metaData: any = doc[metaSymbol];
+      const patches: Patch[] = metaData.mostRecentPatch?.patches;
+      const afterHead: string = metaData.mostRecentPatch?.after[0];
 
-      if (metaData.mostRecentPatch.patches.length === 0) return;
+      if (head === afterHead) return;
+      if (patches?.length === 0) return;
 
-      const firstPatch = metaData.mostRecentPatch.patches[0]
+      patches.forEach((patch: any) => {
+        if (patch.action === ContentActionType.PUT) return; // PUT events are empty
+        if (patch.action === ContentActionType.DEL && !patch.length) // DEL events with no length are actually length 1
+          patch.length = 1;
 
-      if (head.current === metaData.mostRecentPatch.after[0])
-        return;
+        // @ts-ignore
+        let actionType: ContentActionType = ContentActionType[patch.action.toUpperCase()];
 
-      head.current = metaData.mostRecentPatch.after[0];
-
-      if (suspense.current) {
-        suspense.current = false;
-        return
-      }
-
-      if (firstPatch.action === ContentActionType.PUT && metaData.mostRecentPatch.patches.length === 1)
-        return;
-
-      if (firstPatch.action === ContentActionType.PUT && metaData.mostRecentPatch.patches.length > 1) {
-        const slicePatch = metaData.mostRecentPatch.patches[1]
-
-        suspense.current = true;
+        if (!head) // use replace on init
+          actionType = ContentActionType.REPLACE
 
         dispatchEditorContent({
-          type: ContentActionType.REPLACE,
+          type: actionType,
           editor: editorRef.current,
           user,
-          index: slicePatch.path[1],
-          value: slicePatch.value
-        });
-
-        return;
-      }
-
-      metaData.mostRecentPatch.patches.forEach((patch: any) => {
-        if (patch.action === ContentActionType.PUT) return;
-
-        if (patch.action !== ContentActionType.DEL)
-          suspense.current = true;
-
-        dispatchEditorContent({
-          type: ContentActionType[patch.action.toUpperCase()],
-          editor: editorRef.current,
-          user,
+          events: editEvents.current,
+          head: afterHead,
           index: patch.path[1],
           value: patch.value,
           length: patch.length
@@ -173,8 +164,7 @@ export function MonacoEditor({ handle, user }: { handle: DocHandle<Document>, us
     <div className="flex w-full h-full min-h-[calc(100vh-4rem)]">
       <Editor
         className="min-h-[calc(100vh-4rem)] h-full grow"
-        defaultLanguage="javascript"
-        defaultValue="// type your code... "
+        defaultLanguage="typescript"
         loading={<CircularSpinner />}
         theme="vs-dark"
         onChange={handleEditorChange}

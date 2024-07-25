@@ -1,5 +1,5 @@
 import { editor, IDisposable, IPosition } from "monaco-editor";
-import { User } from "../../types";
+import { User } from "../../../types";
 
 type IConfiguration = {
   lineHeight: number;
@@ -7,7 +7,7 @@ type IConfiguration = {
 
 /**
  * 
- * This class implements a Monaco Content Widget to render a remote user's
+ * This class implements a Monaco Content Widget to render a remote user"s
  * cursor, and an optional tooltip.
  * 
  * Based on: https://github.com/convergencelabs/monaco-collab-ext/blob/master/src/ts/RemoteCursorWidget.ts
@@ -47,23 +47,23 @@ export class CursorWidget implements editor.IContentWidget, IDisposable {
       lineHeight = 17;
 
     this.domNode = document.createElement("div");
-    this.domNode.className = 'monaco-remote-cursor'
+    this.domNode.className = "monaco-remote-cursor"
     this.domNode.style.background = user.color;
     this.domNode.style.height = `${lineHeight}px`;
 
     if (tooltipEnabled) {
       this.tooltipNode = document.createElement("div");
-      this.tooltipNode.className = 'monaco-remote-cursor-tooltip'
+      this.tooltipNode.className = "monaco-remote-cursor-tooltip"
       this.tooltipNode.style.background = user.color;
       this.tooltipNode.innerText = user.name;
       this.domNode.appendChild(this.tooltipNode);
 
       if (showTooltipOnHover) {
-        this.domNode.style.pointerEvents = 'auto';
-        this.domNode.addEventListener('mouseover', () => {
+        this.domNode.style.pointerEvents = "auto";
+        this.domNode.addEventListener("mouseover", () => {
           this.setTooltipVisible(true);
         })
-        this.domNode.addEventListener('mouseout', () => {
+        this.domNode.addEventListener("mouseout", () => {
           this.setTooltipVisible(false);
         })
       }
