@@ -1,5 +1,5 @@
 import { editor, IDisposable, IPosition } from "monaco-editor";
-import { User } from "../../../types";
+import { User } from "../../types";
 
 type IConfiguration = {
   lineHeight: number;

@@ -1,7 +1,7 @@
 
 import { editor, Selection } from "monaco-editor";
 
-import { SelectionDecoration } from "../helpers/monaco/objects/selection";
+import { SelectionDecoration } from "../helpers/monaco/selection";
 import { User } from "../types";
 
 export enum SelectionActionType {

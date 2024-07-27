@@ -46,3 +46,60 @@ body {
   pointer-events: auto;
   opacity: 0.4;
 }
+
+
+/* Scrollbar styling */
+
+.scroll-view-class {
+  overflow-y: auto;
+  height: 100%;
+  width: 100%;
+}
+
+::-webkit-scrollbar {
+  height: 1rem;
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: .5rem;
+  width: 1rem;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  --tw-border-opacity: 1;
+  background-color: hsla(0, 0%, 89%, .8);
+  border-color: rgba(255, 255, 255, var(--tw-border-opacity));
+  border-radius: 9999px;
+  border-width: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgba(227, 227, 227, var(--tw-bg-opacity))
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background-color: hsla(0, 0%, 100%, .1);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsla(0, 0%, 100%, .3)
+  }
+}
+
+@media (min-width: 768px) {
+  .scrollbar-trigger ::-webkit-scrollbar-thumb {
+    visibility: hidden
+  }
+
+  .scrollbar-trigger:hover ::-webkit-scrollbar-thumb {
+    visibility: visible
+  }
+}

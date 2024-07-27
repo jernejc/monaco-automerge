@@ -1,7 +1,7 @@
 
 import { editor, IPosition } from "monaco-editor";
 
-import { CursorWidget } from "../helpers/monaco/objects/cursor";
+import { CursorWidget } from "../helpers/monaco/cursor";
 import { User } from "../types";
 
 export enum WidgetActionType {
@@ -19,7 +19,6 @@ export type WidgetAction = {
 }
 
 export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): CursorWidget[] {
-  //console.log("widgetsReducer", action);
   
   switch (action.type) {
     case WidgetActionType.UPSERT:

@@ -2,6 +2,7 @@
 import { editor, Range } from "monaco-editor";
 
 import { User } from "../types";
+import { addEventLog, EventLogType } from "../helpers/eventLog";
 
 export enum ContentActionType {
   SPLICE = "splice",
@@ -14,7 +15,7 @@ export type ContentAction = {
   type: ContentActionType;
   editor: editor.ICodeEditor;
   user: User | null;
-  events: string[];
+  events: EventLogType[];
   head: string;
   index: number;
   value: string;
@@ -27,7 +28,7 @@ export function editorContentReducer(head: string, action: ContentAction) {
 
   if (!editor || !editor.getModel()) return action.head;
 
-  events.push("remote")
+  addEventLog(events, EventLogType.REMOTE);
 
   switch (type) {
     case ContentActionType.REPLACE: {
