@@ -32,7 +32,7 @@ export default function App() {
   document.location.hash = handle.url // this will update the URL
 
   return (
-    <div className="flex w-full h-full bg-neutral-800 text-white">
+    <div className="flex w-full h-full">
       <Wrapper user={user} handle={handle} />
     </div>
   );

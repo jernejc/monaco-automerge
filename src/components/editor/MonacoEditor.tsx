@@ -3,7 +3,7 @@ import { useEffect, useReducer, useRef } from "react";
 import { editor, IPosition, Selection } from "monaco-editor";
 import Editor, { OnChange, OnMount } from "@monaco-editor/react";
 
-import { DocHandle } from "@automerge/automerge-repo";
+import { DocHandle, Patch } from "@automerge/automerge-repo";
 import { updateText } from "@automerge/automerge/next";
 import { useDocument, useLocalAwareness, useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
@@ -20,8 +20,6 @@ import { CircularSpinner } from "./CircularSpinner";
 
 export function MonacoEditor({ user, handle, preview }: { user: User, handle: DocHandle<Document>, preview?: Preview | null }) {
 
-  console.log('MonacoEditor', handle)
-
   const [doc, changeDoc] = useDocument<Document>(handle?.url);
   const [localState, updateLocalState] = useLocalAwareness({
     handle,
@@ -30,7 +28,7 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
     heartbeatTime: 5000
   });
 
-  const [peerStates] = useRemoteAwareness({
+  const [peerStates, heartbeats] = useRemoteAwareness({
     handle,
     localUserId: user.id,
     offlineTimeout: 10000
@@ -60,6 +58,7 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
   }
 
   const handleEditorChange: OnChange = (value: string | undefined, ev: editor.IModelContentChangedEvent) => {
+
     if (removeEventLog(editEvents.current, EventLogType.REMOTE)) return;
     if (ev.isFlush) return;
     if (value === undefined) return;
@@ -86,6 +85,9 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
   }
 
   useEffect(() => {
+    console.log("peerStates", peerStates);
+    console.log("heartbeats", heartbeats);
+
     if (peerStates && editorRef.current) {
       for (const peer in peerStates) {
         const { position, selection, user } = peerStates[peer];
@@ -113,7 +115,12 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
       type: WidgetActionType.CLEAR_UNACTIVE,
       activePeers: Object.keys(peerStates)
     });
-  }, [peerStates]);
+
+    dispatchSelections({
+      type: SelectionActionType.CLEAR_UNACTIVE,
+      activePeers: Object.keys(peerStates)
+    });
+  }, [peerStates, heartbeats, user]);
 
   useEffect(() => {
     if (removeEventLog(editEvents.current, EventLogType.LOCAL))
@@ -130,7 +137,9 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
       if (head === changeMeta?.head) return;
       if (changeMeta?.patches.length === 0) return;
 
-      changeMeta.patches.forEach((patch: any) => {
+      const put = changeMeta.patches.find((patch: Patch) => patch.action === ContentActionType.PUT);
+
+      changeMeta.patches.forEach((patch: Patch) => {
         if (patch.action === ContentActionType.PUT) return; // PUT events are empty
         if (patch.action === ContentActionType.DEL && !patch.length) // DEL events with no length are actually length 1
           patch.length = 1;
@@ -138,7 +147,7 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
         // @ts-ignore
         let actionType: ContentActionType = ContentActionType[patch.action.toUpperCase()];
 
-        if (!head && ContentActionType.SPLICE) // use replace on init
+        if ((put || !head) && ContentActionType.SPLICE) // use replace on init
           actionType = ContentActionType.REPLACE
 
         dispatchEditorContent({
@@ -147,18 +156,20 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
           user,
           events: editEvents.current,
           head: changeMeta.head,
-          index: patch.path[1],
+          index: patch.path[1] as number,
+          // @ts-ignore
           value: patch.value,
+          // @ts-ignore
           length: patch.length
         });
       });
     }
-  }, [doc]);
+  }, [doc, head, user]);
 
   return (
-    <div className={`w-full h-full min-h-[calc(100vh-4rem)] ${preview?.head ? 'hidden' : 'flex'}`}>
+    <div className={`w-full h-full min-h-[calc(100vh-4rem)] ${preview?.head ? "hidden" : "flex"}`}>
       <Editor
-        className="min-h-[calc(100vh-4rem)] h-full grow"
+        className="w-full h-full min-h-[calc(100vh-4rem)] grow"
         defaultLanguage="typescript"
         loading={<CircularSpinner />}
         theme="vs-dark"

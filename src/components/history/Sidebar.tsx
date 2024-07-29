@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { State } from "@automerge/automerge";
@@ -8,7 +8,7 @@ import { Document, Preview } from "../../types";
 
 import { getHistoryLogs } from "../../helpers/automerge/getHistoryLogs";
 
-export function HistorySidebar({ handle, preview, setPreview }: { handle: DocHandle<Document>, setPreview: any, preview?: Preview | null }) {
+export function HistorySidebar({ handle, preview, setPreview, setViewHistory }: { handle: DocHandle<Document>, setPreview: any, setViewHistory: any, preview?: Preview | null }) {
 
   const [doc] = useDocument<Document>(handle?.url);
   const [history, setHistory] = useState<State<Document>[]>([]);
@@ -20,28 +20,25 @@ export function HistorySidebar({ handle, preview, setPreview }: { handle: DocHan
   }, [doc]);
 
   const openPreview = (state: State<Document>) => {
-    if (doc?.text) {
-      setPreview({
-        newState: state,
-        head: state.change.hash,
-        currentText: doc?.text,
-      });
-    }
+    setPreview({
+      newState: state,
+      head: state.change.hash
+    });
   }
 
   return (
     <div className="flex flex-col max-w-80 min-w-80 h-[100vh] bg-neutral-950">
-      <div className="flex flex-row items-center justify-between p-4 pr-2 h-16">
+      <div className="flex flex-row items-center justify-between p-4 h-16">
         <span className="text-lg font-semibold text-neutral-400">History</span>
-        <button className="flex items-center justify-center w-8 h-8 bg-neutral-800 hover:bg-neutral-700 ml-auto">
+        <button className="flex items-center justify-center w-8 h-8 bg-neutral-800 hover:bg-neutral-700 ml-auto" onClick={() => setViewHistory(false)}>
           <CloseIcon />
         </button>
       </div>
       <div className="flex flex-col max-w-full max-h-[calc(100vh - 4rem)] overflow-y-auto">
-        {history.map((state: State<Document>, index: number) =>
+        {history.map((state: State<Document>) =>
           <div className={`flex flex-col group hover:bg-neutral-700 px-3 py-2 cursor-pointer ${preview?.head === state.change.hash ? 'bg-neutral-700' : ''}`}
-               onClick={() => openPreview(state)}
-               key={index}>
+            onClick={() => openPreview(state)}
+            key={state.change.hash}>
             <div className="flex flex-row items-center gap-2">
               <span className="text-sm font-semibold">#</span>
               <span className="text-sm truncate w-auto">{state.change.hash}</span>

@@ -1,8 +1,8 @@
-import { State } from "@automerge/automerge";
+import { Doc, State } from "@automerge/automerge";
 import { Document } from "./document";
 
 export type Preview = {
-  currentText: string
+  currentDoc: Doc<Document>
   newState: State<Document>
   head: string
 }

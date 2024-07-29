@@ -43,8 +43,10 @@ export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): C
 
       return widgets
     } case WidgetActionType.CLEAR_UNACTIVE: {
+      console.log("widgetsReducer CLEAR_UNACTIVE", action.activePeers, widgets);
+
       widgets.forEach((widget: CursorWidget) => {
-        if (!action.activePeers || !action.activePeers?.includes(widget.user.id))
+        if (action.activePeers?.length === 0  || !action.activePeers?.includes(widget.user.id))
           widget.dispose();
       });
 

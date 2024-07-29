@@ -32,20 +32,7 @@ export function editorContentReducer(head: string, action: ContentAction) {
 
   switch (type) {
     case ContentActionType.REPLACE: {
-      const start = editor.getModel()!.getPositionAt(index);
-      const end = editor.getModel()!.getPositionAt(index + value.length);
-
-      editor.executeEdits(user!.id, [{
-        range: new Range(
-          start.lineNumber,
-          start.column,
-          end.lineNumber,
-          end.column
-        ),
-        text: value,
-        forceMoveMarkers: true
-      }]);
-
+      editor.setValue(value || "");
       return action.head
     } case ContentActionType.SPLICE: {
       const position = editor.getModel()!.getPositionAt(index);

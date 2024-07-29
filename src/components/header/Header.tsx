@@ -33,7 +33,7 @@ export function Peers({ peerStates }: { peerStates: any }) {
   )
 }
 
-export function Header({ handle, user }: { handle: DocHandle<Document>, user: User }) {
+export function Header({ handle, user, setViewHistory }: { handle: DocHandle<Document>, user: User, setViewHistory: any }) {
   const [peerStates] = useRemoteAwareness({
     handle,
     localUserId: user.id,
@@ -46,7 +46,9 @@ export function Header({ handle, user }: { handle: DocHandle<Document>, user: Us
 
       <Peers peerStates={peerStates} />
 
-      <HistoryIcon />
+      <button onClick={() => setViewHistory((current: boolean) => !current)}>
+        <HistoryIcon />
+      </button>
     </div>
   )
 }
