@@ -2,7 +2,7 @@ import { State } from "@automerge/automerge";
 import { Document } from "./document";
 
 export type Preview = {
-  currentState: State<Document>
+  currentText: string
   newState: State<Document>
   head: string
 }

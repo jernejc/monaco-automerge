@@ -19,9 +19,9 @@ export type SelectionAction = {
 }
 
 export function selectionReducer(selections: SelectionDecoration[], action: SelectionAction) {
-  
+
   switch (action.type) {
-    case SelectionActionType.UPSERT:
+    case SelectionActionType.UPSERT: {
       const existingItem = findExisting(selections, action.user!);
 
       if (existingItem) {
@@ -34,7 +34,7 @@ export function selectionReducer(selections: SelectionDecoration[], action: Sele
         ...selections,
         new SelectionDecoration(action.editor!, action.user!, action.selection!)
       ];
-    case SelectionActionType.REMOVE:
+    } case SelectionActionType.REMOVE: {
       const removeItem = findExisting(selections, action.user!);
 
       if (removeItem) {
@@ -43,13 +43,14 @@ export function selectionReducer(selections: SelectionDecoration[], action: Sele
       }
 
       return selections
-    case SelectionActionType.CLEAR_UNACTIVE:
+    } case SelectionActionType.CLEAR_UNACTIVE: {
       selections.forEach((selection: SelectionDecoration) => {
         if (!action.activePeers || !action.activePeers?.includes(selection.user.id))
           selection.dispose();
       });
 
       return selections.filter((selection: SelectionDecoration) => !selection.disposed);
+    }
     default:
       throw Error("Unknown action: " + action.type);
   }

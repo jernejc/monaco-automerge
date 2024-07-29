@@ -12,7 +12,7 @@ export function getChangeMeta(doc: Doc<Document>): ChangeMeta | null {
 
   // @ts-ignore
   const metaData: any = doc[metaSymbol];
-  
+
   return {
     patches: metaData.mostRecentPatch?.patches || [],
     head: metaData.mostRecentPatch?.after[0]

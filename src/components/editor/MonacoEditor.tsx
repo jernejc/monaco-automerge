@@ -11,14 +11,16 @@ import { SelectionActionType, selectionReducer } from "../../reducers/selectionR
 import { WidgetActionType, widgetsReducer } from "../../reducers/widgetsReducer";
 import { ContentActionType, editorContentReducer } from "../../reducers/editorContentReducer";
 
-import { Document, User, ChangeMeta } from "../../types";
+import { Document, User, ChangeMeta, Preview } from "../../types";
 
 import { removeEventLog, addEventLog, EventLogType } from "../../helpers/eventLog";
 import { getChangeMeta } from "../../helpers/automerge/getChangeMeta";
 
 import { CircularSpinner } from "./CircularSpinner";
 
-export function MonacoEditor({ user, handle }: { user: User, handle: DocHandle<Document> }) {
+export function MonacoEditor({ user, handle, preview }: { user: User, handle: DocHandle<Document>, preview?: Preview | null }) {
+
+  console.log('MonacoEditor', handle)
 
   const [doc, changeDoc] = useDocument<Document>(handle?.url);
   const [localState, updateLocalState] = useLocalAwareness({
@@ -85,7 +87,7 @@ export function MonacoEditor({ user, handle }: { user: User, handle: DocHandle<D
 
   useEffect(() => {
     if (peerStates && editorRef.current) {
-      for (let peer in peerStates) {
+      for (const peer in peerStates) {
         const { position, selection, user } = peerStates[peer];
 
         if (position) {
@@ -127,7 +129,7 @@ export function MonacoEditor({ user, handle }: { user: User, handle: DocHandle<D
       if (!changeMeta) return;
       if (head === changeMeta?.head) return;
       if (changeMeta?.patches.length === 0) return;
-      
+
       changeMeta.patches.forEach((patch: any) => {
         if (patch.action === ContentActionType.PUT) return; // PUT events are empty
         if (patch.action === ContentActionType.DEL && !patch.length) // DEL events with no length are actually length 1
@@ -153,18 +155,8 @@ export function MonacoEditor({ user, handle }: { user: User, handle: DocHandle<D
     }
   }, [doc]);
 
-  // cleanup
-  useEffect(() => {
-    return () => {
-      updateLocalState((state: any) => ({ ...state, selection: null, user: null }));
-
-      if (editorRef.current)
-        editorRef.current.dispose();
-    }
-  }, []);
-
   return (
-    <div className="flex w-full h-full min-h-[calc(100vh-4rem)]">
+    <div className={`w-full h-full min-h-[calc(100vh-4rem)] ${preview?.head ? 'hidden' : 'flex'}`}>
       <Editor
         className="min-h-[calc(100vh-4rem)] h-full grow"
         defaultLanguage="typescript"

@@ -19,9 +19,9 @@ export type WidgetAction = {
 }
 
 export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): CursorWidget[] {
-  
+
   switch (action.type) {
-    case WidgetActionType.UPSERT:
+    case WidgetActionType.UPSERT: {
       const existingItem = findExisting(widgets, action.user!);
 
       if (existingItem) {
@@ -33,7 +33,7 @@ export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): C
         ...widgets,
         new CursorWidget(action.editor!, action.user!, action.position!)
       ];
-    case WidgetActionType.REMOVE:
+    } case WidgetActionType.REMOVE: {
       const removeItem = findExisting(widgets, action.user!);
 
       if (removeItem) {
@@ -42,13 +42,14 @@ export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): C
       }
 
       return widgets
-    case WidgetActionType.CLEAR_UNACTIVE:
-      widgets.forEach((widget: CursorWidget) => {        
+    } case WidgetActionType.CLEAR_UNACTIVE: {
+      widgets.forEach((widget: CursorWidget) => {
         if (!action.activePeers || !action.activePeers?.includes(widget.user.id))
           widget.dispose();
       });
 
       return widgets.filter((widget: CursorWidget) => !widget.disposed);
+    }
     default:
       throw Error("Unknown action: " + action.type);
   }

@@ -1,6 +1,4 @@
 
-import { useEffect } from "react";
-
 import { DocHandle } from "@automerge/automerge-repo";
 import { useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 

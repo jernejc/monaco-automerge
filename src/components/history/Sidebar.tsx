@@ -4,11 +4,11 @@ import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { State } from "@automerge/automerge";
 import { DocHandle } from "@automerge/automerge-repo";
 
-import { Document } from "../../types";
+import { Document, Preview } from "../../types";
 
 import { getHistoryLogs } from "../../helpers/automerge/getHistoryLogs";
 
-export function HistorySidebar({ handle, setPreview }: { handle: DocHandle<Document>, setPreview: any }) {
+export function HistorySidebar({ handle, preview, setPreview }: { handle: DocHandle<Document>, setPreview: any, preview?: Preview | null }) {
 
   const [doc] = useDocument<Document>(handle?.url);
   const [history, setHistory] = useState<State<Document>[]>([]);
@@ -20,11 +20,13 @@ export function HistorySidebar({ handle, setPreview }: { handle: DocHandle<Docum
   }, [doc]);
 
   const openPreview = (state: State<Document>) => {
-    setPreview({
-      currentState: state,
-      newState: state,
-      head: state.change.hash
-    });
+    if (doc?.text) {
+      setPreview({
+        newState: state,
+        head: state.change.hash,
+        currentText: doc?.text,
+      });
+    }
   }
 
   return (
@@ -37,7 +39,9 @@ export function HistorySidebar({ handle, setPreview }: { handle: DocHandle<Docum
       </div>
       <div className="flex flex-col max-w-full max-h-[calc(100vh - 4rem)] overflow-y-auto">
         {history.map((state: State<Document>, index: number) =>
-          <div className="flex flex-col group hover:bg-neutral-700 px-3 py-2 cursor-pointer" key={index} onClick={() => openPreview(state)}>
+          <div className={`flex flex-col group hover:bg-neutral-700 px-3 py-2 cursor-pointer ${preview?.head === state.change.hash ? 'bg-neutral-700' : ''}`}
+               onClick={() => openPreview(state)}
+               key={index}>
             <div className="flex flex-row items-center gap-2">
               <span className="text-sm font-semibold">#</span>
               <span className="text-sm truncate w-auto">{state.change.hash}</span>

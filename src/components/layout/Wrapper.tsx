@@ -20,19 +20,18 @@ export function Wrapper({ user, handle }: { user: User, handle: DocHandle<Docume
           <Header user={user} handle={handle} />
         </div>
 
-        {preview === null &&
-          <div>
-            <MonacoEditor user={user} handle={handle} />
-          </div>
-        }
         {preview !== null &&
           <div>
             <PreviewEditor preview={preview} setPreview={setPreview} />
           </div>
         }
+
+        <div>
+          <MonacoEditor user={user} handle={handle} preview={preview} />
+        </div>
       </div>
 
-      <HistorySidebar handle={handle} setPreview={setPreview} />
+      <HistorySidebar handle={handle} preview={preview} setPreview={setPreview} />
     </div>
   )
 }
