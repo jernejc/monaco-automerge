@@ -4,6 +4,7 @@ import { editor, Range } from "monaco-editor";
 import { User } from "../types";
 import { addEventLog, EventLogType } from "../helpers/eventLog";
 
+
 export enum ContentActionType {
   SPLICE = "splice",
   DEL = "del",

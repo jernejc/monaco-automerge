@@ -9,7 +9,13 @@ import { Header } from "../header/Header";
 import { HistorySidebar } from "../history/Sidebar";
 import { PreviewEditor } from "../editor/PreviewEditor";
 
-export function Wrapper({ user, handle }: { user: User, handle: DocHandle<Document> }) {
+
+export type WrapperProps = {
+  user: User;
+  handle: DocHandle<Document>;
+}
+
+export function Wrapper({ user, handle }: WrapperProps) {
 
   const [preview, setPreview] = useState<Preview | null>(null);
   const [viewHistory, setViewHistory] = useState<boolean>(false);

@@ -1,8 +1,9 @@
 
-import { editor, IPosition } from "monaco-editor";
+import { editor, Position } from "monaco-editor";
 
 import { CursorWidget } from "../helpers/monaco/cursor";
 import { User } from "../types";
+
 
 export enum WidgetActionType {
   UPSERT = "upsert",
@@ -13,7 +14,7 @@ export enum WidgetActionType {
 export type WidgetAction = {
   type: WidgetActionType;
   user?: User;
-  position?: IPosition;
+  position?: Position;
   editor?: editor.ICodeEditor;
   activePeers?: string[];
 }
@@ -43,8 +44,6 @@ export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): C
 
       return widgets
     } case WidgetActionType.CLEAR_UNACTIVE: {
-      console.log("widgetsReducer CLEAR_UNACTIVE", action.activePeers, widgets);
-
       widgets.forEach((widget: CursorWidget) => {
         if (action.activePeers?.length === 0  || !action.activePeers?.includes(widget.user.id))
           widget.dispose();

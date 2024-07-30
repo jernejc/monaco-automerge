@@ -10,7 +10,14 @@ import { Preview, Document } from "../../types";
 
 import { CircularSpinner } from "./CircularSpinner";
 
-export function PreviewEditor({ handle, preview, setPreview }: { handle: DocHandle<Document>, preview: Preview, setPreview: any }) {
+
+export type PreviewEditorProps = {
+  handle: DocHandle<Document>;
+  preview: Preview;
+  setPreview: any;
+}
+
+export function PreviewEditor({ handle, preview, setPreview }: PreviewEditorProps) {
 
   const [doc, changeDoc] = useDocument<Document>(handle?.url);
 

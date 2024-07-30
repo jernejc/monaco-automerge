@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { State } from "@automerge/automerge";
@@ -8,7 +8,15 @@ import { Document, Preview } from "../../types";
 
 import { getHistoryLogs } from "../../helpers/automerge/getHistoryLogs";
 
-export function HistorySidebar({ handle, preview, setPreview, setViewHistory }: { handle: DocHandle<Document>, setPreview: any, setViewHistory: any, preview?: Preview | null }) {
+
+export type HistorySidebarProps = {
+  handle: DocHandle<Document>;
+  preview?: Preview | null;
+  setPreview: any;
+  setViewHistory: any;
+}
+
+export function HistorySidebar({ handle, preview, setPreview, setViewHistory }: HistorySidebarProps) {
 
   const [doc] = useDocument<Document>(handle?.url);
   const [history, setHistory] = useState<State<Document>[]>([]);

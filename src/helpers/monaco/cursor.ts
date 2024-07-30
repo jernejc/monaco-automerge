@@ -1,7 +1,7 @@
-import { editor, IDisposable, IPosition } from "monaco-editor";
+import { editor, IDisposable, Position } from "monaco-editor";
 import { User } from "../../types";
 
-type IConfiguration = {
+type Configuration = {
   lineHeight: number;
 }
 
@@ -29,7 +29,7 @@ export class CursorWidget implements editor.IContentWidget, IDisposable {
 
   constructor(editor: editor.ICodeEditor,
     user: User,
-    position: IPosition,
+    position: Position,
     tooltipEnabled: boolean = true,
     tooltipDuration: number = 2000,
     showTooltipOnHover: boolean = true) {
@@ -94,7 +94,7 @@ export class CursorWidget implements editor.IContentWidget, IDisposable {
       this.setPosition(position);
   }
 
-  setPosition(position: IPosition) {
+  setPosition(position: Position) {
     this.updatePosition(position);
 
     if (this.tooltipNode !== null) {
@@ -123,7 +123,7 @@ export class CursorWidget implements editor.IContentWidget, IDisposable {
     return this.position;
   }
 
-  updatePosition(position: IPosition) {
+  updatePosition(position: Position) {
     this.position = {
       position: { ...position },
       preference: [editor.ContentWidgetPositionPreference.EXACT]
@@ -175,7 +175,9 @@ export class CursorWidget implements editor.IContentWidget, IDisposable {
   }
 }
 
-function getConfiguration(editorInstance: editor.ICodeEditor): IConfiguration {
+// support for older versions
+
+function getConfiguration(editorInstance: editor.ICodeEditor): Configuration {
   if (typeof (editorInstance as any).getConfiguration === "function") {
     return (editorInstance as any).getConfiguration();
   }

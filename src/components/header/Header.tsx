@@ -1,4 +1,6 @@
 
+import { useEffect, useState } from "react";
+
 import { DocHandle } from "@automerge/automerge-repo";
 import { useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
@@ -7,15 +9,62 @@ import { User, Document } from "../../types";
 import { Logo } from "./Logo";
 import { HistoryIcon } from "./HistoryIcon";
 import { UsersIcon } from "./UsersIcon";
+import { config } from "../../config";
+import { getActivePeers } from "../../helpers/automerge/getActivePeers";
 
 
-export function Peers({ peerStates }: { peerStates: any }) {
+export type HeaderProps = {
+  handle: DocHandle<Document>;
+  user: User;
+  setViewHistory: any;
+}
+
+export function Header({ handle, user, setViewHistory }: HeaderProps) {
+
+  const [userList, setUserList] = useState<User[]>([]);
+  const [peerStates, heartbeats] = useRemoteAwareness({
+    handle,
+    localUserId: user.id,
+    offlineTimeout: config.defaults.activePeerTimeout
+  });
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setUserList([])
+    }, config.defaults.activePeerTimeout);
+
+    return () => clearTimeout(timeoutId);
+  }, [heartbeats]);
+
+  useEffect(() => {
+    if (!peerStates) return setUserList([]);
+
+    const activePeers = getActivePeers(peerStates, heartbeats);
+
+    if (activePeers.length === 0) return setUserList([]);
+
+    setUserList(() => activePeers.map((peer) => peer.user));
+  }, [peerStates, heartbeats]);
+
+  return (
+    <div className="flex items-center w-full h-16 bg-neutral-950 text-white px-4 gap-6">
+      <Logo />
+
+      <Peers userList={userList} />
+
+      <button onClick={() => setViewHistory((current: boolean) => !current)}>
+        <HistoryIcon />
+      </button>
+    </div>
+  )
+}
+
+export function Peers({ userList }: { userList: User[] }) {
+
   return (
     <div className="ml-auto flex flex-row">
       <div className="flex flex-row items-center space-x-2">
-        {Object.keys(peerStates).map((peer: string) => {
-          const { user } = peerStates[peer];
-
+        {userList && userList.map((user: User) => {
           if (!user) return null;
 
           return (
@@ -29,26 +78,6 @@ export function Peers({ peerStates }: { peerStates: any }) {
       <div className="ml-4">
         <UsersIcon />
       </div>
-    </div>
-  )
-}
-
-export function Header({ handle, user, setViewHistory }: { handle: DocHandle<Document>, user: User, setViewHistory: any }) {
-  const [peerStates] = useRemoteAwareness({
-    handle,
-    localUserId: user.id,
-    offlineTimeout: 10000
-  });
-
-  return (
-    <div className="flex items-center w-full h-16 bg-neutral-950 text-white px-4 gap-6">
-      <Logo />
-
-      <Peers peerStates={peerStates} />
-
-      <button onClick={() => setViewHistory((current: boolean) => !current)}>
-        <HistoryIcon />
-      </button>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef } from "react";
 
-import { editor, IPosition, Selection } from "monaco-editor";
+import { editor, Position, Selection } from "monaco-editor";
 import Editor, { OnChange, OnMount } from "@monaco-editor/react";
 
 import { DocHandle, Patch } from "@automerge/automerge-repo";
@@ -11,14 +11,23 @@ import { SelectionActionType, selectionReducer } from "../../reducers/selectionR
 import { WidgetActionType, widgetsReducer } from "../../reducers/widgetsReducer";
 import { ContentActionType, editorContentReducer } from "../../reducers/editorContentReducer";
 
-import { Document, User, ChangeMeta, Preview } from "../../types";
+import { Document, User, ChangeMeta, Preview, Peer } from "../../types";
+import { config } from "../../config";
 
 import { removeEventLog, addEventLog, EventLogType } from "../../helpers/eventLog";
 import { getChangeMeta } from "../../helpers/automerge/getChangeMeta";
+import { getActivePeers } from "../../helpers/automerge/getActivePeers";
 
 import { CircularSpinner } from "./CircularSpinner";
 
-export function MonacoEditor({ user, handle, preview }: { user: User, handle: DocHandle<Document>, preview?: Preview | null }) {
+
+export type MonacoEditorProps = {
+  user: User;
+  handle: DocHandle<Document>;
+  preview?: Preview | null;
+}
+
+export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
 
   const [doc, changeDoc] = useDocument<Document>(handle?.url);
   const [localState, updateLocalState] = useLocalAwareness({
@@ -31,7 +40,7 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
   const [peerStates, heartbeats] = useRemoteAwareness({
     handle,
     localUserId: user.id,
-    offlineTimeout: 10000
+    offlineTimeout: config.defaults.activePeerTimeout
   });
 
   const editorRef = useRef<any>(null);
@@ -42,9 +51,9 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
   const [head, dispatchEditorContent] = useReducer(editorContentReducer, "");
 
   const updateLocalPosition = (editor: editor.ICodeEditor) => {
-    const position: IPosition | null = editor.getPosition();
+    const position: Position | null = editor.getPosition();
 
-    if (!position) return;
+    if (!position) return updateLocalState((state: any) => ({ ...state, position: null, user }));
 
     updateLocalState((state: any) => ({ ...state, position, user }));
   }
@@ -85,12 +94,11 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
   }
 
   useEffect(() => {
-    console.log("peerStates", peerStates);
-    console.log("heartbeats", heartbeats);
-
     if (peerStates && editorRef.current) {
-      for (const peer in peerStates) {
-        const { position, selection, user } = peerStates[peer];
+      const activePeers: Peer[] = getActivePeers(peerStates, heartbeats);
+
+      activePeers.forEach((peer: Peer) => {
+        const { user, position, selection } = peer;
 
         if (position) {
           dispatchWidgets({
@@ -108,19 +116,45 @@ export function MonacoEditor({ user, handle, preview }: { user: User, handle: Do
             editor: editorRef.current
           });
         }
-      }
+      });
+
+      dispatchWidgets({
+        type: WidgetActionType.CLEAR_UNACTIVE,
+        activePeers: activePeers.map((peer: Peer) => peer.user.id)
+      });
+
+      dispatchSelections({
+        type: SelectionActionType.CLEAR_UNACTIVE,
+        activePeers: activePeers.map((peer: Peer) => peer.user.id)
+      });
+    } else {
+      dispatchWidgets({
+        type: WidgetActionType.CLEAR_UNACTIVE,
+        activePeers: Object.keys({})
+      });
+
+      dispatchSelections({
+        type: SelectionActionType.CLEAR_UNACTIVE,
+        activePeers: Object.keys({})
+      });
     }
-
-    dispatchWidgets({
-      type: WidgetActionType.CLEAR_UNACTIVE,
-      activePeers: Object.keys(peerStates)
-    });
-
-    dispatchSelections({
-      type: SelectionActionType.CLEAR_UNACTIVE,
-      activePeers: Object.keys(peerStates)
-    });
   }, [peerStates, heartbeats, user]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      dispatchWidgets({
+        type: WidgetActionType.CLEAR_UNACTIVE,
+        activePeers: Object.keys({})
+      });
+
+      dispatchSelections({
+        type: SelectionActionType.CLEAR_UNACTIVE,
+        activePeers: Object.keys({})
+      });
+    }, config.defaults.activePeerTimeout);
+
+    return () => clearTimeout(timeoutId);
+  }, [heartbeats]);
 
   useEffect(() => {
     if (removeEventLog(editEvents.current, EventLogType.LOCAL))

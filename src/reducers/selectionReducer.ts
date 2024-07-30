@@ -4,6 +4,7 @@ import { editor, Selection } from "monaco-editor";
 import { SelectionDecoration } from "../helpers/monaco/selection";
 import { User } from "../types";
 
+
 export enum SelectionActionType {
   UPSERT = "upsert",
   REMOVE = "remove",
