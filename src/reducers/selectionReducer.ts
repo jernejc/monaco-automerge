@@ -45,8 +45,6 @@ export function selectionReducer(selections: SelectionDecoration[], action: Sele
 
       return selections
     } case SelectionActionType.CLEAR_UNACTIVE: {
-      console.log("selectionReducer CLEAR_UNACTIVE", action.activePeers, selections);
-
       selections.forEach((selection: SelectionDecoration) => {
         if (action.activePeers?.length === 0  || !action.activePeers?.includes(selection.user.id))
           selection.dispose();

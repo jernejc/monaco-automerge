@@ -68,7 +68,10 @@ export function Peers({ userList }: { userList: User[] }) {
           if (!user) return null;
 
           return (
-            <div key={user.id} className="flex w-8 h-8 items-center justify-center text-2xl rounded-full overflow-hidden" style={{ background: user.color }}>
+            <div className="flex w-8 h-8 items-center justify-center text-2xl rounded-full overflow-hidden" 
+                 key={user.id} 
+                 role="figure"  
+                 style={{ background: user.color }}>
               {user.name.slice(0, 1).toUpperCase()}
             </div>
           )
