@@ -9,8 +9,6 @@ test('has the correct title', async ({ page }) => {
 test('enter text in monaco editor and make a screenshot', async ({ page }) => {
   await page.goto('/');
 
-  await page.waitForURL("/**")
-
   const monacoEditor = page.locator(".monaco-editor").first();
   await monacoEditor.click();
 
@@ -36,6 +34,8 @@ test('two user collaborating', async ({ browser }) => {
   await user1Page.keyboard.type('I\'m user 1. This is a line of text\n');
   await user1Page.keyboard.type('This is another line of text\n');
 
+  await user1Page.screenshot({ path: `test-results/user1.png` });
+
   const monacoEditor2 = user2Page.locator(".monaco-editor").first();
   await monacoEditor2.click();
 
@@ -43,7 +43,6 @@ test('two user collaborating', async ({ browser }) => {
   await user2Page.keyboard.type('I\'m user 2. This is a line of text\n');
   await user2Page.keyboard.type('This is another line of text\n');
 
-  await user1Page.screenshot({ path: `test-results/user1.png` });
   await user2Page.screenshot({ path: `test-results/user2.png` });
 
   await expect(user1Page.getByRole("figure")).toBeVisible();
