@@ -1,0 +1,11 @@
+{
+  "name": "qa-editor-tests",
+  "version": "0.0.1",
+  "author": "Jernej",
+  "scripts": {
+    "test": "npx playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.45.3"
+  }
+}

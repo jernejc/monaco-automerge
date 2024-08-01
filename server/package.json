@@ -1,0 +1,28 @@
+{
+  "name": "qa-editor-server",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "author": "Jernej",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "serve": "node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.0.2",
+    "@types/ws": "^8.5.12",
+    "express": "^4.19.2",
+    "tsx": "^4.16.5",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@automerge/automerge": "^2.2.7",
+    "@automerge/automerge-repo": "^1.2.1",
+    "@automerge/automerge-repo-network-websocket": "^1.2.1",
+    "@automerge/automerge-repo-storage-nodefs": "^1.2.1",
+    "glob": "^11.0.0",
+    "ws": "^8.18.0"
+  }
+}

@@ -9,11 +9,13 @@ import { RepoContext } from "@automerge/automerge-repo-react-hooks";
 import App from "./App.tsx";
 import "./main.css";
 
+import { config } from "./config.ts";
+
 
 const repo: Repo = new Repo({
   network: [
     new BroadcastChannelNetworkAdapter(),
-    new BrowserWebSocketClientAdapter("wss://sync.automerge.org")
+    new BrowserWebSocketClientAdapter(config.defaults.wsConnection),
   ],
 });
 

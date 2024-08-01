@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: client
+    container_name: qa-editor-client
+    command: npm run dev
+    ports:
+      - "8080:8080"
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: server
+    container_name: qa-editor-server
+    command: npm run dev
+    ports:
+      - "3080:3080"

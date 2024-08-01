@@ -1,5 +1,6 @@
 export const config = {
   defaults: {
+    wsConnection: "ws://localhost:3080",
     activePeerTimeout: 10000,
     wolfLogo: "https://cdn.prod.website-files.com/6260298eca091b57c9cf188e/6260298eca091b8710cf18ea_logo.svg",
     defaultText: `
