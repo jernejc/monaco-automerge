@@ -11,7 +11,7 @@ import { NodeFSStorageAdapter } from "@automerge/automerge-repo-storage-nodefs"
 
 const socketWS: WebSocketServer = new WebSocketServer({ noServer: true });
 
-const dir = process.env.DATA_DIR !== undefined ? process.env.DATA_DIR : ".amrg";
+const dir = process.env.DATA_DIR !== undefined ? process.env.DATA_DIR : "amrg";
 
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
