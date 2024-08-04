@@ -42,8 +42,6 @@ const server = app.listen(PORT, () => {
 });
 
 server.on("upgrade", (request, socket, head) => {
-  console.log("upgrade");
-  // @ts-ignore
   socketWS.handleUpgrade(request, socket, head, (socket) => {
     socketWS.emit("connection", socket, request)
   });

@@ -24,11 +24,10 @@ export default function App() {
   const rootDocUrl: string = `${document.location.hash.substring(1)}`
   let handle: DocHandle<Document>
 
-  if (isValidAutomergeUrl(rootDocUrl)) {
+  if (isValidAutomergeUrl(rootDocUrl)) 
     handle = repo.find(rootDocUrl)
-  } else {
+  else
     handle = repo.create<Document>({ text: "" })
-  }
 
   document.location.hash = handle.url // this will update the URL
 
