@@ -44,7 +44,7 @@ This document outlines the architecture of Wolf Editor. It provides an overview 
 
 ## Offline Support and Merging Changes
 
-**Automerge's CRDT** based synchronization allows local changes to be made even when offline. Changes are synchronized with other peers once the connection is re-established.
+**Automerge's CRDT** based synchronization allows local changes to be made even when offline. Changes are synchronized with other peers once the connection is re-established. Conflicts and concurrent writes are handeled automatically, ensuring a consistent document state across all clients.
 
 - [Merge Rules](https://automerge.org/docs/under-the-hood/merge_rules/)
 - [The Storage Model](https://automerge.org/docs/under-the-hood/storage/#the-storage-model)
@@ -68,7 +68,10 @@ At this stage, scaling of the servers can be delegated to a managed service like
 
 <h2 id="shared-policy">Shared Policy and Authentication (*Not implemented)</h3>
 
-Automerge **Shared Policy** can be used to enforce access control policies for individual users and documents. Authentication can be handled by a 3rd party service ([Firebase](https://firebase.google.com/docs/auth), [0Auth](https://auth0.com/)) or self-hosted and managed with something like [Keycloak](https://www.keycloak.org/).
+Automerge **Shared Policy** can be used to enforce access control policies for individual documents. Authentication and Access Level can be handled by a 3rd party service ([Firebase](https://firebase.google.com/docs/auth), [0Auth](https://auth0.com/)) or self-hosted and managed with something like [Keycloak](https://www.keycloak.org/).
+
+- [Automerge Repo Share Policy](https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo#share-policy)
+- https://automerge.org/automerge-repo/types/_automerge_automerge_repo.SharePolicy.html
 
 <h2 id="elastic">Elasticsearch Instance (*Not implemented)</h3>
 
@@ -76,7 +79,7 @@ Can be used to stores document change logs, including user and other metadata. P
 
 Example queries:
 
-```json
+``` javascript
 
 {
   "query": {
