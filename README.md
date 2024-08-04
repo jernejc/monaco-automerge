@@ -1,21 +1,40 @@
-# Wolf Editor - Collaborative code editing
+<sub>README.md</sub>
 
-<p align="center" style="margin: 30px 0px">
+<p align="center" style="margin: 40px 0px">
   <a href="https://www.qawolf.com/">
-    <img alt="QA Wolf Logo" src="https://cdn.prod.website-files.com/6260298eca091b57c9cf188e/6260298eca091b8710cf18ea_logo.svg" width="160" />
+    <img alt="QA Wolf Logo" src="./assets/wolf-logo-dark.png" width="170" />
   </a>
 </p>
 
-A collaborative code editor built using [Monaco Editor](https://microsoft.github.io/monaco-editor/), [Automerge](https://automerge.org/). Supports real-time collaborative editing with cursor and selection sharing. Changes are synced peer to peer and via websockets to a central server (sync.automerge.org).
+<h1 align="center">
+Wolf Editor - Collaborative Code Editing
+</h1>
+
+A collaborative code editor built using [Monaco Editor](https://microsoft.github.io/monaco-editor/) and [Automerge](https://automerge.org/). Supports multiple users editing the same document simultaneously, with features like real-time synchronization, offline editing, and cursor/selection sharing.
 
 <p align="center">
-  <img alt="Ed" src="./assets/qa-wolf-demo_4.gif" />
+  <img alt="Editor Demo" src="./assets/qa-wolf-demo_4.gif" />
 </p>
 
+## Key Features
 
-## Run locally
+- Real-time collaborative editing with multiple users.
+- Cursor and selection sharing between users.
+- Peer-to-peer and WebSocket-based synchronization.
+- Offline support with local changes synchronization once the connection is restored.
+- In-depth insights and analytics.
+- Undo/Redo functionality.
+- Scalable architecture.
 
-To get started with this project, follow the steps below:
+## Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+
+### Prerequisites
+
+Make sure you have [Docker](https://www.docker.com/products/docker-desktop) installed on your machine and running.
+
+### Installation
 
 1. Clone the repository:
     ```sh
@@ -23,22 +42,27 @@ To get started with this project, follow the steps below:
     cd qawolf-collab-editor
     ```
 
-2. Install the dependencies:
+2. Start the application using Docker Compose:
     ```sh
-    npm install
+    docker-compose up
     ```
 
-3. Start the development server:
-    ```sh
-    npm run dev
-    ```
+This will start both the client and server containers.
 
+## Usage
 
-### Relevant projects
+1. Open the application in your browser. By default, it will run on `http://localhost:8080`.
+2. Open another browser window to start collaborating in real-time.
 
-- https://github.com/automerge/automerge-repo 
-- https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo-react-hooks
-- https://github.com/automerge/automerge-prosemirror
-- https://github.com/automerge/automerge-repo-sync-server
-- https://github.com/microsoft/monaco-editor
-- https://github.com/convergencelabs/monaco-collab-ext/
+## Architecture
+
+For a detailed architecture overview, please refer to the [architecture documentation](./docs/architecture.md).
+
+## Relevant Projects
+
+- [Automerge Repo](https://github.com/automerge/automerge-repo)
+- [Automerge Repo React Hooks](https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo-react-hooks)
+- [Automerge Prosemirror](https://github.com/automerge/automerge-prosemirror)
+- [Automerge Repo Sync Server](https://github.com/automerge/automerge-repo-sync-server)
+- [Monaco Editor](https://github.com/microsoft/monaco-editor)
+- [Monaco Collab Ext](https://github.com/convergencelabs/monaco-collab-ext/)
