@@ -52,7 +52,11 @@ This will start both the client and server containers.
 ## Usage
 
 1. Open the application in your browser. By default, it will run on `http://localhost:8080`.
-2. Open another browser window to start collaborating in real-time.
+2. **Copy the URL** and open it a new tab to start collaborating in real-time.
+3. Example url:
+    ```
+    [host]/#automerge:336uk9sp24iLqxcgi5k7BvV48a9f
+    ```
 
 ## Tests
 
