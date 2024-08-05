@@ -20,7 +20,7 @@ This document outlines the architecture of Wolf Editor. It provides an overview 
 - [Repo](#automerge-repo)
 - [Client](#client)
 - [Shared Policy (*)](#shared-policy)
-- [Elastic (*)](#elastic)
+- [Elasticsearch (*)](#elastic)
 
 <h3 id="sync-server">Automerge Sync Server</h3>
 
@@ -81,7 +81,7 @@ User authentication and document access level can be handled by a 3rd party serv
 - [Automerge Repo Share Policy](https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo#share-policy)
 - https://automerge.org/automerge-repo/types/_automerge_automerge_repo.SharePolicy.html
 
-<h2 id="elastic">Elasticsearch Instance (*Not implemented)</h3>
+<h2 id="elastic">Elasticsearch (*Not implemented)</h3>
 
 Can be used to stores document change logs, including user and other metadata. Provides in-depth insights and analytics on documents, users.
 
