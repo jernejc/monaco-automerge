@@ -174,6 +174,7 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
       const put = changeMeta.patches.find((patch: Patch) => patch.action === ContentActionType.PUT);
 
       changeMeta.patches.forEach((patch: Patch) => {
+
         if (patch.action === ContentActionType.PUT) return; // PUT events are empty
         if (patch.action === ContentActionType.DEL && !patch.length) // DEL events with no length are actually length 1
           patch.length = 1;
@@ -181,7 +182,7 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
         // @ts-ignore
         let actionType: ContentActionType = ContentActionType[patch.action.toUpperCase()];
 
-        if ((put || !head) && ContentActionType.SPLICE) // use replace on init
+        if (put && ContentActionType.SPLICE) // use replace on init
           actionType = ContentActionType.REPLACE
 
         dispatchEditorContent({
@@ -194,7 +195,7 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
           // @ts-ignore
           value: patch.value,
           // @ts-ignore
-          length: patch.length
+          length: patch.length || patch.value.length || 0
         });
       });
     }
