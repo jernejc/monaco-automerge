@@ -22,7 +22,7 @@ const config = {
   network: [new NodeWSServerAdapter(socketWS)],
   storage: new NodeFSStorageAdapter(dir),
   peerId: `storage-server-${hostname}` as PeerId,
-  sharePolicy: async () => console.log("sharePolicy"),
+  sharePolicy: async () => true /*console.log("sharePolicy")*/
 }
 
 // @ts-ignore
