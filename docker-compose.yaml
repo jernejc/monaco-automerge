@@ -5,7 +5,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: client
+    image: qa-editor-client-img
     container_name: qa-editor-client
     command: npm run dev
     ports:
@@ -14,7 +14,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: server
+    image: qa-editor-server-img
     container_name: qa-editor-server
     command: npm run dev
     ports:
