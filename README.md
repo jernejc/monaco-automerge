@@ -54,6 +54,15 @@ This will start both the client and server containers.
 1. Open the application in your browser. By default, it will run on `http://localhost:8080`.
 2. Open another browser window to start collaborating in real-time.
 
+## Tests
+
+Make sure docker-compose is running **all containers**.
+
+1. Run from the `tests` folder:
+    ```
+    npm run test
+    ```
+
 ## Architecture
 
 For a detailed architecture overview, please refer to the [architecture documentation](./docs/architecture.md).

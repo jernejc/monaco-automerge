@@ -1,7 +1,9 @@
 <sub>architecture.md</sub>
 
 <p style="margin:10px 0px">
-<a target="_blank" href="https://excalidraw.com/#json=yww6Aapyn22A3YcXSkZnB,VrvnMYpapUYH1CQpCRJEFg">https://excalidraw.com/#json=yww6Aapyn22A3YcXSkZnB</a>
+  <a target="_blank" href="https://excalidraw.com/#json=yww6Aapyn22A3YcXSkZnB,VrvnMYpapUYH1CQpCRJEFg">
+    https://excalidraw.com/#json=yww6Aapyn22A3YcXSkZnB
+  </a>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/diagram-dark.png">
     <img src="../assets/diagram-light.png">
@@ -17,9 +19,9 @@ This document outlines the architecture of Wolf Editor. It provides an overview 
 ## Key Components
 
 - [Sync Server](#sync-server)
-- [Repo](#automerge-repo)
-- [Client](#client)
-- [Shared Policy (*)](#shared-policy)
+- [Automerge Repo](#automerge-repo)
+- [React Client](#client)
+- [Shared Policy & Auth (*)](#shared-policy)
 - [Elasticsearch (*)](#elastic)
 
 <h3 id="sync-server">Automerge Sync Server</h3>
@@ -32,7 +34,7 @@ This document outlines the architecture of Wolf Editor. It provides an overview 
 
 <h3 id="automerge-repo">Automerge Repo</h3>
 
-- Facilitates communication between the sync server and connected clients (peer-to-peer).
+- Facilitates communication between the sync server and connected clients (also peer-to-peer).
 - Currently using the following **networks adapters**: 
   - [BroadcastChannelNetworkAdapter](https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo-network-websocket)
   - [BrowserWebSocketClientAdapter](https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo-network-websocket)
@@ -41,7 +43,7 @@ This document outlines the architecture of Wolf Editor. It provides an overview 
 
 <h3 id="client">React Client</h3>
 
-- Implements the [Monaco Editor](https://microsoft.github.io/monaco-editor/) for code editing.
+- Implements [Monaco Editor](https://microsoft.github.io/monaco-editor/) for code editing.
 - Handles peer-to-peer and server synchronization via [Automerge Repo](https://github.com/automerge/automerge-repo).
 - Handles local and remote cursor/selection awareness.
 - [Automerge Repo React hooks](https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo-react-hooks)
@@ -67,10 +69,10 @@ At this stage, scaling of the servers can be delegated to a managed service like
 ## Future Enhancements
 
 - **CI/CD workflows (GH Actions)**: Run Playwright tests with the docker setup. Automatically deploy if checks are OK.
-- **User ACL**: Keep track of user roles, permissions, document access
-- **Cloud storage (S3, GCS)**: Automerge Repo storage adapter for known Cloud providers
-- **Transpile and bundle Typecript**: Currently Docker runs the Vite dev server, Typescript needs to be transpiled and bundeled into JS
-- **Unit tests**: Both server and client require some units to be tested more thoroughly
+- **User ACL**: Keep track of user roles, permissions, document access.
+- **Cloud storage (S3, GCS)**: Automerge Repo storage adapter for known Cloud providers.
+- **Transpile and bundle Typecript**: Currently Docker runs [Vite](https://vitejs.dev/) dev server, Typescript needs to be transpiled and bundeled into JS.
+- **Unit tests**: Both server and client require some units to be tested more thoroughly.
 
 <h2 id="shared-policy">Shared Policy and Authentication (*Not implemented)</h3>
 
@@ -78,12 +80,13 @@ Automerge **Shared Policy** can be used to control which document can shared wit
 
 User authentication and document access level can be handled by a 3rd party service ([Firebase](https://firebase.google.com/docs/auth), [0Auth](https://auth0.com/)) or self-hosted and managed with something like [Keycloak](https://www.keycloak.org/).
 
+- User ID <> Peer ID (used by Automerge)
 - [Automerge Repo Share Policy](https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo#share-policy)
 - https://automerge.org/automerge-repo/types/_automerge_automerge_repo.SharePolicy.html
 
 <h2 id="elastic">Elasticsearch (*Not implemented)</h3>
 
-Can be used to stores document change logs, including user and other metadata. Provides in-depth insights and analytics on documents, users.
+Automerge prioritizes document size and compression, thus removing all metadata regarding individual changes. Elasticsearch can be used to store document change logs, including user and other metadata. This provides in-depth insights and analytics for documents and users.
 
 Example queries:
 
