@@ -19,7 +19,6 @@ const repo: Repo = new Repo({
   ],
 });
 
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <RepoContext.Provider value={repo}>
     <App />

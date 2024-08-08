@@ -1,25 +1,16 @@
-
-import { faker } from "@faker-js/faker";
-
 import { DocHandle, isValidAutomergeUrl } from "@automerge/automerge-repo";
 import { useRepo } from "@automerge/automerge-repo-react-hooks";
 
 import { Document, User } from "./types";
-import { config } from "./config";
 
 import { Wrapper } from "./components/layout/Wrapper";
+import { getUser } from "./helpers/getUser";
 
 
 export default function App() {
 
   const repo = useRepo();
-  const user: User = {
-    id: faker.string.uuid(),
-    name: faker.internet.displayName(),
-    email: faker.internet.email(),
-    avatar: faker.image.avatar(),
-    color: faker.helpers.arrayElement(config.defaults.cursorColors)
-  }
+  const user: User = getUser();
 
   const rootDocUrl: string = `${document.location.hash.substring(1)}`
   let handle: DocHandle<Document>

@@ -93,6 +93,18 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
     }
   }
 
+  const clearUnactivePeers = (activePeers?: any) => {
+    dispatchWidgets({
+      type: WidgetActionType.CLEAR_UNACTIVE,
+      activePeers: activePeers || Object.keys({})
+    });
+
+    dispatchSelections({
+      type: SelectionActionType.CLEAR_UNACTIVE,
+      activePeers: activePeers || Object.keys({})
+    });
+  }
+
   useEffect(() => {
     if (peerStates && editorRef.current) {
       const activePeers: Peer[] = getActivePeers(peerStates, heartbeats);
@@ -118,39 +130,15 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
         }
       });
 
-      dispatchWidgets({
-        type: WidgetActionType.CLEAR_UNACTIVE,
-        activePeers: activePeers.map((peer: Peer) => peer.user.id)
-      });
-
-      dispatchSelections({
-        type: SelectionActionType.CLEAR_UNACTIVE,
-        activePeers: activePeers.map((peer: Peer) => peer.user.id)
-      });
+      clearUnactivePeers(activePeers);
     } else {
-      dispatchWidgets({
-        type: WidgetActionType.CLEAR_UNACTIVE,
-        activePeers: Object.keys({})
-      });
-
-      dispatchSelections({
-        type: SelectionActionType.CLEAR_UNACTIVE,
-        activePeers: Object.keys({})
-      });
+      clearUnactivePeers();
     }
   }, [peerStates, heartbeats, user]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      dispatchWidgets({
-        type: WidgetActionType.CLEAR_UNACTIVE,
-        activePeers: Object.keys({})
-      });
-
-      dispatchSelections({
-        type: SelectionActionType.CLEAR_UNACTIVE,
-        activePeers: Object.keys({})
-      });
+      clearUnactivePeers();
     }, config.defaults.activePeerTimeout);
 
     return () => clearTimeout(timeoutId);
@@ -171,11 +159,11 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
       if (head === changeMeta?.head) return;
       if (changeMeta?.patches.length === 0) return;
 
-      const put = changeMeta.patches.find((patch: Patch) => patch.action === ContentActionType.PUT);
+      const put: Patch | undefined = changeMeta.patches.find((patch: Patch) => patch.action === ContentActionType.PUT);
 
       changeMeta.patches.forEach((patch: Patch) => {
 
-        if (patch.action === ContentActionType.PUT) return; // PUT events are empty
+        if (patch.action === ContentActionType.PUT) return; // PUT events are empty, but precede SPLICE on init
         if (patch.action === ContentActionType.DEL && !patch.length) // DEL events with no length are actually length 1
           patch.length = 1;
 
