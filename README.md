@@ -63,7 +63,9 @@ This will start both the client and server containers.
 Make sure docker-compose is running **all containers**.
 
 1. Run from the `tests` folder:
-    ```
+    ```sh
+    npm install
+    npx playwright install
     npm run test
     ```
 
