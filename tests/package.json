@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "author": "Jernej",
   "scripts": {
+    "setup": "npm install && npx playwright install",
     "test": "npx playwright test"
   },
   "devDependencies": {
