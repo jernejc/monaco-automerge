@@ -43,7 +43,7 @@ Make sure you have [Docker](https://www.docker.com/products/docker-desktop) inst
     ```
 
 2. Start the application using Docker Compose:
-    ```sh
+    ```
     docker-compose up
     ```
 
@@ -55,7 +55,11 @@ This will start both the client and server containers.
 2. **Copy the URL** and open it a new tab to start collaborating in real-time.
 3. Example url:
     ```
-    [host]/#automerge:336uk9sp24iLqxcgi5k7BvV48a9f
+    [host]/automerge:336uk9sp24iLqxcgi5k7BvV48a9f
+    ```
+4. Link to preview states:
+    ```
+    [host]/automerge:336uk9sp24iLqxcgi5k7BvV48a9f/[stateHash]
     ```
 
 ## Tests
@@ -63,9 +67,8 @@ This will start both the client and server containers.
 Make sure docker-compose is running **all containers**.
 
 1. Run from the `tests` folder:
-    ```sh
-    npm install
-    npx playwright install
+    ```
+    npm run setup
     npm run test
     ```
 
