@@ -1,30 +1,42 @@
-import { DocHandle, isValidAutomergeUrl } from "@automerge/automerge-repo";
-import { useRepo } from "@automerge/automerge-repo-react-hooks";
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 
-import { Document, User } from "./types";
+import { Repo } from "@automerge/automerge-repo";
+import { RepoContext } from "@automerge/automerge-repo-react-hooks";
+
+import { BroadcastChannelNetworkAdapter } from "@automerge/automerge-repo-network-broadcastchannel";
+import { BrowserWebSocketClientAdapter } from "@automerge/automerge-repo-network-websocket";
+
+import { rootLoader } from "./helpers/loaders/rootLoader";
 
 import { Wrapper } from "./components/layout/Wrapper";
-import { getUser } from "./helpers/getUser";
+import { MonacoEditor } from "./components/editor/MonacoEditor";
+import { PreviewEditor } from "./components/editor/PreviewEditor";
+
+import { config } from "./config";
 
 
 export default function App() {
 
-  const repo = useRepo();
-  const user: User = getUser();
+  const repo: Repo = new Repo({
+    network: [
+      new BroadcastChannelNetworkAdapter(),
+      new BrowserWebSocketClientAdapter(config.defaults.wsConnection),
+    ],
+  });
 
-  const rootDocUrl: string = `${document.location.hash.substring(1)}`
-  let handle: DocHandle<Document>
-
-  if (isValidAutomergeUrl(rootDocUrl)) 
-    handle = repo.find(rootDocUrl)
-  else
-    handle = repo.create<Document>({ text: "" })
-
-  document.location.hash = handle.url // this will update the URL
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route path="/" element={<Wrapper />} loader={rootLoader(repo)} id="root">
+        <Route path=":docUrl" element={<MonacoEditor />} >
+          <Route path=":changeId" element={<PreviewEditor />} />
+        </Route>
+      </Route>
+    )
+  );
 
   return (
-    <div className="flex w-full h-full">
-      <Wrapper user={user} handle={handle} />
-    </div>
+    <RepoContext.Provider value={repo}>
+      <RouterProvider router={router} />
+    </RepoContext.Provider>
   );
 }

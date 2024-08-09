@@ -1,17 +1,17 @@
 import { useEffect, useReducer, useRef } from "react";
+import { useRouteLoaderData, useParams, Outlet } from "react-router-dom";
 
 import { editor, Position, Selection } from "monaco-editor";
 import Editor, { OnChange, OnMount } from "@monaco-editor/react";
 
-import { DocHandle, Patch } from "@automerge/automerge-repo";
-import { updateText } from "@automerge/automerge/next";
+import { DocHandle, updateText } from "@automerge/automerge-repo";
 import { useDocument, useLocalAwareness, useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
 import { SelectionActionType, selectionReducer } from "../../reducers/selectionReducer";
 import { WidgetActionType, widgetsReducer } from "../../reducers/widgetsReducer";
-import { ContentActionType, editorContentReducer } from "../../reducers/editorContentReducer";
+import { editorContentReducer } from "../../reducers/editorContentReducer";
 
-import { Document, User, ChangeMeta, Preview, Peer } from "../../types";
+import { Document, User, ChangeMeta, Peer, ChangePatch } from "../../types";
 import { config } from "../../config";
 
 import { removeEventLog, addEventLog, EventLogType } from "../../helpers/eventLog";
@@ -21,15 +21,13 @@ import { getActivePeers } from "../../helpers/automerge/getActivePeers";
 import { CircularSpinner } from "./CircularSpinner";
 
 
-export type MonacoEditorProps = {
-  user: User;
-  handle: DocHandle<Document>;
-  preview?: Preview | null;
-}
+export function MonacoEditor() {
 
-export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
+  const { changeId } = useParams<"changeId">() as { changeId: string };
+  const { user, handle } = useRouteLoaderData("root") as { user: User, handle: DocHandle<Document> };
 
-  const [doc, changeDoc] = useDocument<Document>(handle?.url);
+  const [doc, changeDoc] = useDocument<Document>(handle.url);
+
   const [localState, updateLocalState] = useLocalAwareness({
     handle,
     userId: user.id,
@@ -93,15 +91,15 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
     }
   }
 
-  const clearUnactivePeers = (activePeers?: any) => {
+  const clearUnactivePeers = (activePeers?: Peer[]) => {
     dispatchWidgets({
       type: WidgetActionType.CLEAR_UNACTIVE,
-      activePeers: activePeers || Object.keys({})
+      activePeers: activePeers || []
     });
 
     dispatchSelections({
       type: SelectionActionType.CLEAR_UNACTIVE,
-      activePeers: activePeers || Object.keys({})
+      activePeers: activePeers || []
     });
   }
 
@@ -134,7 +132,7 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
     } else {
       clearUnactivePeers();
     }
-  }, [peerStates, heartbeats, user]);
+  }, [peerStates, heartbeats]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -155,55 +153,43 @@ export function MonacoEditor({ user, handle, preview }: MonacoEditorProps) {
 
       const changeMeta: ChangeMeta | null = getChangeMeta(doc);
 
-      if (!changeMeta) return;
+      if (!changeMeta || changeMeta.patches.length === 0) return;
       if (head === changeMeta?.head) return;
-      if (changeMeta?.patches.length === 0) return;
 
-      const put: Patch | undefined = changeMeta.patches.find((patch: Patch) => patch.action === ContentActionType.PUT);
-
-      changeMeta.patches.forEach((patch: Patch) => {
-
-        if (patch.action === ContentActionType.PUT) return; // PUT events are empty, but precede SPLICE on init
-        if (patch.action === ContentActionType.DEL && !patch.length) // DEL events with no length are actually length 1
-          patch.length = 1;
-
-        // @ts-ignore
-        let actionType: ContentActionType = ContentActionType[patch.action.toUpperCase()];
-
-        if (put && ContentActionType.SPLICE) // use replace on init
-          actionType = ContentActionType.REPLACE
-
+      changeMeta.patches.forEach((patch: ChangePatch) => {
         dispatchEditorContent({
-          type: actionType,
-          editor: editorRef.current,
           user,
+          type: patch.actionType,
+          editor: editorRef.current,
           events: editEvents.current,
           head: changeMeta.head,
           index: patch.path[1] as number,
-          // @ts-ignore
           value: patch.value,
-          // @ts-ignore
-          length: patch.length || patch.value.length || 0
+          length: patch.length
         });
       });
     }
-  }, [doc, head, user]);
+  }, [doc, editorRef.current]);
 
   return (
-    <div className={`w-full h-full min-h-[calc(100vh-4rem)] ${preview?.head ? "hidden" : "flex"}`}>
-      <Editor
-        className="w-full h-full min-h-[calc(100vh-4rem)] grow"
-        defaultLanguage="typescript"
-        loading={<CircularSpinner />}
-        theme="vs-dark"
-        onChange={handleEditorChange}
-        onMount={handleEditorMount}
-        options={{
-          minimap: { enabled: false },
-          quickSuggestions: true,
-          folding: false
-        }}
-      />
-    </div>
+    <>
+      <Outlet />
+
+      <div className={`w-full h-full min-h-[calc(100vh-4rem)] ${changeId ? "hidden" : "flex"}`}>
+        <Editor
+          className="w-full h-full min-h-[calc(100vh-4rem)] grow"
+          defaultLanguage="typescript"
+          loading={<CircularSpinner />}
+          theme="vs-dark"
+          onChange={handleEditorChange}
+          onMount={handleEditorMount}
+          options={{
+            minimap: { enabled: false },
+            quickSuggestions: true,
+            folding: false
+          }}
+        />
+      </div>
+    </>
   );
 }

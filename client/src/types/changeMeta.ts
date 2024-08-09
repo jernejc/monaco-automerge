@@ -1,6 +1,6 @@
-import { Patch } from "@automerge/automerge-repo";
+import { ChangePatch } from './changePatch'
 
 export type ChangeMeta = {
-  patches: Patch[]
+  patches: ChangePatch[]
   head: string
 }

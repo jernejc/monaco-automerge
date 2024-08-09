@@ -2,7 +2,7 @@
 import { editor, Position } from "monaco-editor";
 
 import { CursorWidget } from "../helpers/monaco/cursor";
-import { User } from "../types";
+import { User, Peer } from "../types";
 
 
 export enum WidgetActionType {
@@ -16,7 +16,7 @@ export type WidgetAction = {
   user?: User;
   position?: Position;
   editor?: editor.ICodeEditor;
-  activePeers?: string[];
+  activePeers?: Peer[];
 }
 
 export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): CursorWidget[] {
@@ -45,7 +45,7 @@ export function widgetsReducer(widgets: CursorWidget[], action: WidgetAction): C
       return widgets
     } case WidgetActionType.CLEAR_UNACTIVE: {
       widgets.forEach((widget: CursorWidget) => {
-        if (action.activePeers?.length === 0  || !action.activePeers?.includes(widget.user.id))
+        if (action.activePeers?.length === 0  || !action.activePeers?.find((peer: Peer) => peer.user.id === widget.user.id))
           widget.dispose();
       });
 

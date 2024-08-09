@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from "react";
+import { useRouteLoaderData } from "react-router-dom";
 
 import { DocHandle } from "@automerge/automerge-repo";
 import { useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
@@ -14,14 +14,15 @@ import { getActivePeers } from "../../helpers/automerge/getActivePeers";
 
 
 export type HeaderProps = {
-  handle: DocHandle<Document>;
-  user: User;
   setViewHistory: any;
 }
 
-export function Header({ handle, user, setViewHistory }: HeaderProps) {
+export function Header({ setViewHistory }: HeaderProps) {
+
+  const { user, handle } = useRouteLoaderData("root") as { user: User, handle: DocHandle<Document> };
 
   const [userList, setUserList] = useState<User[]>([]);
+
   const [peerStates, heartbeats] = useRemoteAwareness({
     handle,
     localUserId: user.id,
@@ -68,10 +69,10 @@ export function Peers({ userList }: { userList: User[] }) {
           if (!user) return null;
 
           return (
-            <div className="flex w-8 h-8 items-center justify-center text-2xl rounded-full overflow-hidden" 
-                 key={user.id} 
-                 role="figure"  
-                 style={{ background: user.color }}>
+            <div className="flex w-8 h-8 items-center justify-center text-2xl rounded-full overflow-hidden"
+              key={user.id}
+              role="figure"
+              style={{ background: user.color }}>
               {user.name.slice(0, 1).toUpperCase()}
             </div>
           )

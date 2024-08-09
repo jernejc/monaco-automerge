@@ -1,9 +1,9 @@
 
 import { faker } from "@faker-js/faker";
 
-import { config } from "../config";
+import { config } from "../../config";
 
-import { User } from "../types";
+import { User } from "../../types";
 
 
 export function getUser(): User {

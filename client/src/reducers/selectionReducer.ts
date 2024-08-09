@@ -2,7 +2,7 @@
 import { editor, Selection } from "monaco-editor";
 
 import { SelectionDecoration } from "../helpers/monaco/selection";
-import { User } from "../types";
+import { User, Peer } from "../types";
 
 
 export enum SelectionActionType {
@@ -16,7 +16,7 @@ export type SelectionAction = {
   user?: User;
   selection?: Selection;
   editor?: editor.ICodeEditor;
-  activePeers?: string[];
+  activePeers?: Peer[];
 }
 
 export function selectionReducer(selections: SelectionDecoration[], action: SelectionAction) {
@@ -46,7 +46,7 @@ export function selectionReducer(selections: SelectionDecoration[], action: Sele
       return selections
     } case SelectionActionType.CLEAR_UNACTIVE: {
       selections.forEach((selection: SelectionDecoration) => {
-        if (action.activePeers?.length === 0  || !action.activePeers?.includes(selection.user.id))
+        if (action.activePeers?.length === 0  || !action.activePeers?.find((peer: Peer) => peer.user.id === selection.user.id))
           selection.dispose();
       });
 

@@ -1,43 +1,50 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { DiffEditor } from "@monaco-editor/react";
 
-import { DocHandle } from "@automerge/automerge-repo";
-import { updateText } from "@automerge/automerge/next";
+import { AnyDocumentId, updateText } from "@automerge/automerge-repo";
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 
-import { Preview, Document } from "../../types";
+import { Document } from "../../types";
 
 import { CircularSpinner } from "./CircularSpinner";
+import { getHashSnapshot } from "../../helpers/automerge/getHashSnapshot";
 
 
-export type PreviewEditorProps = {
-  handle: DocHandle<Document>;
-  preview: Preview;
-  setPreview: any;
-}
+export function PreviewEditor() {
 
-export function PreviewEditor({ handle, preview, setPreview }: PreviewEditorProps) {
+  const navigate = useNavigate();
 
-  const [doc, changeDoc] = useDocument<Document>(handle?.url);
+  const { docUrl } = useParams<"docUrl">() as { docUrl: AnyDocumentId };
+  const { changeId } = useParams<"changeId">() as { changeId: string };
+
+  const [doc, changeDoc] = useDocument<Document>(docUrl);
+
+  const [statePreview, setStatePreview] = useState<string>('');
 
   const revert = useCallback(() => {
     if (doc) {
-      changeDoc(currentDoc => updateText(currentDoc, ["text"], preview.newState.snapshot.text));
-      setPreview(null);
+      changeDoc(currentDoc => updateText(currentDoc, ["text"], statePreview));
+      navigate(`/${docUrl}`)
     }
-  }, [doc, preview]);
+  }, [doc, statePreview]);
+
+  useEffect(() => {
+    if (doc)
+      setStatePreview(getHashSnapshot(doc, changeId));
+  }, [doc, changeId]);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] h-full w-full overflow-hidden">
       <div className="flex flex-row px-4 items-center h-16">
-        <span className="text-lg font-bold"># {preview.head}</span>
+        <span className="text-lg font-bold"># {changeId}</span>
 
         <div className="flex flex-row ml-auto w-auto gap-2">
           <button className="flex items-center justify-center bg-neutral-400 p-2 px-4 text-black shadow-md" onClick={revert}>
             Apply
           </button>
-          <button className="flex items-center justify-center bg-neutral-950 p-2 px-4 shadow-md" onClick={() => setPreview(null)}>
+          <button className="flex items-center justify-center bg-neutral-950 p-2 px-4 shadow-md" onClick={() => navigate(`/${docUrl}`)}>
             Cancel
           </button>
         </div>
@@ -49,7 +56,7 @@ export function PreviewEditor({ handle, preview, setPreview }: PreviewEditorProp
         theme="vs-dark"
         loading={<CircularSpinner />}
         original={doc?.text}
-        modified={preview.newState.snapshot.text} />
+        modified={statePreview} />
     </div>
   )
 }

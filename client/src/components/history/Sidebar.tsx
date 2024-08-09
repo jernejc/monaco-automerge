@@ -1,38 +1,32 @@
 import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { State } from "@automerge/automerge";
-import { DocHandle } from "@automerge/automerge-repo";
+import { AnyDocumentId } from "@automerge/automerge-repo";
 
-import { Document, Preview } from "../../types";
+import { Document } from "../../types";
 
 import { getHistoryLogs } from "../../helpers/automerge/getHistoryLogs";
 
 
 export type HistorySidebarProps = {
-  handle: DocHandle<Document>;
-  preview?: Preview | null;
-  setPreview: any;
   setViewHistory: any;
 }
 
-export function HistorySidebar({ handle, preview, setPreview, setViewHistory }: HistorySidebarProps) {
+export function HistorySidebar({ setViewHistory }: HistorySidebarProps) {
 
-  const [doc] = useDocument<Document>(handle?.url);
+  const { docUrl } = useParams<"docUrl">() as { docUrl: AnyDocumentId };
+  const { changeId } = useParams<"changeId">() as { changeId: string };
+
+  const [doc] = useDocument<Document>(docUrl);
   const [history, setHistory] = useState<State<Document>[]>([]);
 
   useEffect(() => {
     if (!doc) return;
-
+    
     setHistory(() => getHistoryLogs(doc));
   }, [doc]);
-
-  const openPreview = (state: State<Document>) => {
-    setPreview({
-      newState: state,
-      head: state.change.hash
-    });
-  }
 
   return (
     <div className="flex flex-col max-w-80 min-w-80 h-[100vh] bg-neutral-950">
@@ -44,15 +38,15 @@ export function HistorySidebar({ handle, preview, setPreview, setViewHistory }: 
       </div>
       <div className="flex flex-col max-w-full max-h-[calc(100vh - 4rem)] overflow-y-auto">
         {history.map((state: State<Document>) =>
-          <div className={`flex flex-col group hover:bg-neutral-700 px-3 py-2 cursor-pointer ${preview?.head === state.change.hash ? 'bg-neutral-700' : ''}`}
-            onClick={() => openPreview(state)}
+          <Link className={`flex flex-col group hover:bg-neutral-700 px-3 py-2 cursor-pointer ${changeId === state.change.hash ? 'bg-neutral-700' : ''}`}
+            to={`/${docUrl}/${state.change.hash}`}
             key={state.change.hash}>
             <div className="flex flex-row items-center gap-2">
               <span className="text-sm font-semibold">#</span>
               <span className="text-sm truncate w-auto">{state.change.hash}</span>
               <span className="w-4 h-4 rounded-full bg-green-700" ></span>
             </div>
-          </div>
+          </Link>
         )}
       </div>
     </div>

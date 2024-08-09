@@ -1,5 +1,6 @@
 export * from "./user"
 export * from "./document"
 export * from "./preview"
-export * from "./changeMeta"
 export * from "./peer"
+export * from "./changeMeta"
+export * from "./changePatch"

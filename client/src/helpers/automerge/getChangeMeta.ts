@@ -1,6 +1,9 @@
 import { Doc } from "@automerge/automerge-repo";
 
-import { Document, ChangeMeta } from "../../types";
+import { Document, ChangeMeta, ChangePatch } from "../../types";
+
+import { ContentActionType } from "../../reducers/editorContentReducer";
+
 
 export function getChangeMeta(doc: Doc<Document>): ChangeMeta | null {
   const metaSymbol: symbol | undefined = Object.getOwnPropertySymbols(doc).find(
@@ -13,8 +16,21 @@ export function getChangeMeta(doc: Doc<Document>): ChangeMeta | null {
   // @ts-ignore
   const metaData: any = doc[metaSymbol];
 
+  const patches: ChangePatch[] = metaData.mostRecentPatch?.patches.filter((patch: ChangePatch) => {
+    return patch.action !== ContentActionType.PUT
+  }).map((patch: ChangePatch) => {
+    if (patch.action === ContentActionType.DEL && !patch.length) // DEL events with no length are actually length 1
+        patch.length = 1;
+
+    patch.length = patch.length || patch.value.length || 0
+
+    // @ts-ignore
+    patch.actionType = ContentActionType[patch.action.toUpperCase()];
+    return patch;
+  }) || [];
+
   return {
-    patches: metaData.mostRecentPatch?.patches || [],
+    patches,
     head: metaData.mostRecentPatch?.after[0]
   }
 }

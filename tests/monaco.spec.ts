@@ -22,10 +22,10 @@ test('two user collaborating', async ({ browser }) => {
   const context = await browser.newContext();
 
   const user1Page = await context.newPage();
-  await user1Page.goto('/#automerge:3y6SECgdoojns17k88dx7hKZp6dj');
+  await user1Page.goto('/automerge:3y6SECgdoojns17k88dx7hKZp6dj');
 
   const user2Page = await context.newPage();
-  await user2Page.goto('/#automerge:3y6SECgdoojns17k88dx7hKZp6dj');
+  await user2Page.goto('/automerge:3y6SECgdoojns17k88dx7hKZp6dj');
 
   const monacoEditor1 = user1Page.locator(".monaco-editor").first();
   await monacoEditor1.click();
