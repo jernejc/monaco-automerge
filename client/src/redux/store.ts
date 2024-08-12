@@ -1,17 +1,19 @@
-import type { Action, ThunkAction } from "@reduxjs/toolkit"
-import { configureStore } from "@reduxjs/toolkit"
+import type { Action, ThunkAction } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 
-import { reducer } from "./editorSlice"
+import { editorReducer } from "./slices/editor";
+import { userReducer } from "./slices/user";
 
 export const store = configureStore({
   reducer: {
-    editor: reducer,
+    editor: editorReducer,
+    user: userReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),
-})
+});
 
 export type AppStore = typeof store
 export type RootState = ReturnType<AppStore["getState"]>

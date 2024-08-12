@@ -1,11 +1,9 @@
 
-import { ContentActionType } from "../redux/reducers/editorContentReducer";
+import { EditPayloadType } from "../types/payload";
 
 export type ChangePatch = {
-  actionType: ContentActionType;
-  action: string;
+  type: EditPayloadType;
   value: string;
-  path: any[]
   length?: number;
-  index?: number;
+  index: number;
 }

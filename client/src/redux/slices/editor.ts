@@ -4,12 +4,12 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 import { Range } from "monaco-editor";
 
-import { CursorWidget } from "../helpers/monaco/cursor";
-import { SelectionDecoration } from "../helpers/monaco/selection";
+import { CursorWidget } from "../../helpers/monaco/cursor";
+import { SelectionDecoration } from "../../helpers/monaco/selection";
 
-import { RootState, AppThunk } from "./store";
+import { RootState, AppThunk } from "../store";
 
-import { User, Peer, EditPayload, EditPayloadType, WidgetPayload, SelectionPayload, PayloadType, EventLogType, EditorState } from "../types";
+import { User, Peer, EditPayload, EditPayloadType, WidgetPayload, SelectionPayload, PayloadType, EventLogType, EditorState } from "../../types";
 
 
 const initialState: EditorState = {
@@ -48,26 +48,22 @@ export const slice = createSlice({
 })
 
 export const { setWidgets, setSelections, setCurrentHead, removeEventLog, addEventLog } = slice.actions;
-export const reducer = slice.reducer;
+export const editorReducer = slice.reducer;
 
-export const widgets = (state: RootState) => state.editor.widgets
-export const selections = (state: RootState) => state.editor.selections
-export const head = (state: RootState) => state.editor.head
+export const getWidgets = (state: RootState) => state.editor.widgets
+export const getSelections = (state: RootState) => state.editor.selections
+export const getHead = (state: RootState) => state.editor.head
 
-export const eventLogLocal = (state: RootState) => state.editor.eventLog.filter((log: EventLogType) => log === EventLogType.LOCAL)
-export const eventLogRemote = (state: RootState) => state.editor.eventLog.filter((log: EventLogType) => log === EventLogType.REMOTE)
+export const getEventLogLocal = (state: RootState) => state.editor.eventLog.filter((log: EventLogType) => log === EventLogType.LOCAL)
+export const getEventLogRemote = (state: RootState) => state.editor.eventLog.filter((log: EventLogType) => log === EventLogType.REMOTE)
 
 // Content Edit Thunks
 
 export const executeEdit = (payload: EditPayload): AppThunk => {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     const { editor, index, user, type, value, length } = payload;
-    const currentHead = head(getState())
 
     dispatch(addEventLog(EventLogType.REMOTE));
-
-    if (currentHead === payload.head)
-      return;
 
     switch (type) {
       case EditPayloadType.REPLACE: {
@@ -116,7 +112,7 @@ export const executeEdit = (payload: EditPayload): AppThunk => {
 export const widgetUpdate = (payload: WidgetPayload): AppThunk => {
   return (dispatch, getState) => {
     const { type, user, position, editor, activePeers } = payload;
-    const items = widgets(getState());
+    const items = getWidgets(getState());
 
     switch (type) {
       case PayloadType.UPSERT: {
@@ -163,7 +159,7 @@ function findExistingWidget(items: CursorWidget[], user: User): CursorWidget | u
 export const selectionUpdate = (payload: SelectionPayload): AppThunk => {
   return (dispatch, getState) => {
     const { type, user, selection, editor, activePeers } = payload;
-    const items = selections(getState());
+    const items = getSelections(getState());
 
     switch (type) {
       case PayloadType.UPSERT: {

@@ -6,10 +6,11 @@ import { DiffEditor } from "@monaco-editor/react";
 import { AnyDocumentId, updateText } from "@automerge/automerge-repo";
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 
+import { getHashSnapshot } from "../../helpers/automerge/getHashSnapshot";
+
 import { Document } from "../../types";
 
 import { CircularSpinner } from "./CircularSpinner";
-import { getHashSnapshot } from "../../helpers/automerge/getHashSnapshot";
 
 
 export function PreviewEditor() {

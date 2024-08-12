@@ -8,7 +8,7 @@ import { RepoContext } from "@automerge/automerge-repo-react-hooks";
 import { BroadcastChannelNetworkAdapter } from "@automerge/automerge-repo-network-broadcastchannel";
 import { BrowserWebSocketClientAdapter } from "@automerge/automerge-repo-network-websocket";
 
-import { rootLoader } from "./helpers/loaders/rootLoader";
+import { rootLoader } from "./loaders/rootLoader";
 
 import { store } from "./redux/store";
 

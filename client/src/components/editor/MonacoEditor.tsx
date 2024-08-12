@@ -7,13 +7,13 @@ import Editor, { OnChange, OnMount } from "@monaco-editor/react";
 import { DocHandle, updateText } from "@automerge/automerge-repo";
 import { useDocument, useLocalAwareness, useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
-import { Document, User, ChangeMeta, Peer, ChangePatch, PayloadType, EventLogType } from "../../types";
+import { Document, ChangeMeta, Peer, ChangePatch, PayloadType, EventLogType } from "../../types";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { executeEdit, widgetUpdate, selectionUpdate, addEventLog, removeEventLog, eventLogLocal, eventLogRemote } from "../../redux/editorSlice";
+import { executeEdit, widgetUpdate, selectionUpdate, addEventLog, removeEventLog, getEventLogLocal, getEventLogRemote, getHead } from "../../redux/slices/editor";
+import { getUser } from "../../redux/slices/user";
 
-import { getChangeMeta } from "../../helpers/automerge/getChangeMeta";
-import { getActivePeers } from "../../helpers/automerge/getActivePeers";
+import { getRecentChangeMeta, getActivePeers } from "../../helpers/automerge";
 
 import { CircularSpinner } from "./CircularSpinner";
 
@@ -23,12 +23,14 @@ import { config } from "../../config";
 export function MonacoEditor() {
 
   const { changeId } = useParams<"changeId">() as { changeId: string };
-  const { user, handle } = useRouteLoaderData("root") as { user: User, handle: DocHandle<Document> };
+  const { handle } = useRouteLoaderData("root") as { handle: DocHandle<Document> };
 
   const dispatch = useAppDispatch()
 
-  const eventsLocal = useAppSelector(eventLogLocal);
-  const eventsRemote = useAppSelector(eventLogRemote);
+  const eventLogLocal = useAppSelector(getEventLogLocal);
+  const eventLogRemote = useAppSelector(getEventLogRemote);
+  const user = useAppSelector(getUser);
+  const currentHead = useAppSelector(getHead);
 
   const [doc, changeDoc] = useDocument<Document>(handle.url);
 
@@ -47,16 +49,16 @@ export function MonacoEditor() {
 
   const editorRef = useRef<any>(null);
 
-  const updateLocalPosition = (editor: editor.ICodeEditor) => {
-    const position: Position | null = editor.getPosition();
+  const updateLocalPosition = () => {
+    const position: Position | null = editorRef.current.getPosition();
 
     if (!position) return updateLocalState((state: any) => ({ ...state, position: null, user }));
 
     updateLocalState((state: any) => ({ ...state, position, user }));
   }
 
-  const updateLocalSelection = (editor: editor.ICodeEditor) => {
-    const selection: Selection | null = editor.getSelection();
+  const updateLocalSelection = () => {
+    const selection: Selection | null = editorRef.current.getSelection();
 
     if (!selection) return updateLocalState((state: any) => ({ ...state, selection: null, user }));
 
@@ -64,7 +66,7 @@ export function MonacoEditor() {
   }
 
   const handleEditorChange: OnChange = (value: string | undefined, ev: editor.IModelContentChangedEvent) => {
-    if (eventsRemote.length > 0) {
+    if (eventLogRemote.length > 0) {
       dispatch(removeEventLog(EventLogType.REMOTE));
       return;
     }
@@ -81,14 +83,14 @@ export function MonacoEditor() {
     editorRef.current = editor;
 
     if (editorRef.current) {
-      updateLocalPosition(editorRef.current);
+      updateLocalPosition();
 
       editorRef.current.onDidChangeCursorPosition(() => {
-        updateLocalPosition(editorRef.current);
+        updateLocalPosition();
       });
 
       editorRef.current.onDidChangeCursorSelection(() => {
-        updateLocalSelection(editorRef.current);
+        updateLocalSelection();
       });
     }
   }
@@ -144,26 +146,24 @@ export function MonacoEditor() {
   }, [heartbeats]);
 
   useEffect(() => {
-    if (eventsLocal.length > 0) {
+    if (eventLogLocal.length > 0) {
       dispatch(removeEventLog(EventLogType.LOCAL));
-      return
+      return;
     }
 
     if (doc && editorRef.current) {
-      const changeMeta: ChangeMeta | null = getChangeMeta(doc);
+      const changeMeta: ChangeMeta | null = getRecentChangeMeta(doc);
 
-      if (doc.text === editorRef.current.getValue()) return;
       if (!changeMeta || changeMeta.patches.length === 0) return;
+      if (doc.text === editorRef.current.getValue()) return;
+      if (changeMeta.head === null || changeMeta.head === currentHead) return;
 
       changeMeta.patches.forEach((patch: ChangePatch) => {
         dispatch(executeEdit({
           user,
-          type: patch.actionType,
           editor: editorRef.current,
           head: changeMeta.head,
-          index: patch.path[1] as number,
-          value: patch.value,
-          length: patch.length
+          ...patch
         }));
       });
     }

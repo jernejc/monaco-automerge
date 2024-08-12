@@ -3,10 +3,9 @@ import { redirect } from "react-router-dom";
 
 import { DocHandle, Repo } from "@automerge/automerge-repo";
 
-import { Document } from "../../types";
+import { Document } from "../types";
 
-import { getUser } from './getUser';
-import { getDocHandle } from './getDocHandle';
+import { getDocHandle } from '../helpers/automerge/getDocHandle';
 
 
 export const rootLoader = (repo: Repo) => ({ params }: { params: any }) => {
@@ -17,7 +16,6 @@ export const rootLoader = (repo: Repo) => ({ params }: { params: any }) => {
     return redirect(`/${handle.url}`);
 
   return {
-    user: getUser(),
     handle
   }
 }

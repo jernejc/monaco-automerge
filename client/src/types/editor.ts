@@ -3,6 +3,7 @@ import { SelectionDecoration } from "../helpers/monaco/selection";
 
 import { EventLogType } from "./";
 
+
 export type EditorState = {
   widgets: CursorWidget[]
   selections: SelectionDecoration[]

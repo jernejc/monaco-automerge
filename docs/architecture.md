@@ -48,6 +48,13 @@ This document outlines the architecture of Wolf Editor. It provides an overview 
 - Handles local and remote cursor/selection awareness.
 - [Automerge Repo React hooks](https://github.com/automerge/automerge-repo/tree/main/packages/automerge-repo-react-hooks)
 - [@monaco-editor/react](https://github.com/suren-atoyan/monaco-react)
+- [Redux toolkit](https://redux-toolkit.js.org/) for global state management
+- [React router](https://reactrouter.com/en/main) for routing
+
+For client side tests run (**make sure you have all the depedencies installed**):
+```sh
+  npm run test
+```
 
 ## Offline Support and Merging Changes
 
@@ -71,7 +78,7 @@ At this stage, scaling of the servers can be delegated to a managed service like
 - **CI/CD workflows (GH Actions)**: Run Playwright tests with the docker setup. Automatically deploy if checks are OK.
 - **User ACL**: Keep track of user roles, permissions, document access.
 - **Cloud storage (S3, GCS)**: Automerge Repo storage adapter for known Cloud providers.
-- **Transpile and bundle Typecript**: Currently Docker runs [Vite](https://vitejs.dev/) dev server, Typescript needs to be transpiled and bundeled into JS.
+- **Transpile and bundle Typecript**: Currently Docker runs [Vite](https://vitejs.dev/) dev server, Typescript needs to be transpiled and bundled into JS.
 - **Unit tests**: Both server and client require some units to be tested more thoroughly.
 
 <h2 id="shared-policy">Shared Policy and Authentication (*Not implemented)</h3>

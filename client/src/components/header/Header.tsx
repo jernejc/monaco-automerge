@@ -4,13 +4,18 @@ import { useRouteLoaderData } from "react-router-dom";
 import { DocHandle } from "@automerge/automerge-repo";
 import { useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
+import { useAppSelector } from "../../redux/hooks";
+import { getUser } from "../../redux/slices/user";
+
 import { User, Document } from "../../types";
+
+import { getActivePeers } from "../../helpers/automerge/getActivePeers";
 
 import { Logo } from "./Logo";
 import { HistoryIcon } from "./HistoryIcon";
 import { UsersIcon } from "./UsersIcon";
+
 import { config } from "../../config";
-import { getActivePeers } from "../../helpers/automerge/getActivePeers";
 
 
 export type HeaderProps = {
@@ -19,8 +24,9 @@ export type HeaderProps = {
 
 export function Header({ setViewHistory }: HeaderProps) {
 
-  const { user, handle } = useRouteLoaderData("root") as { user: User, handle: DocHandle<Document> };
+  const { handle } = useRouteLoaderData("root") as { handle: DocHandle<Document> };
 
+  const user = useAppSelector(getUser);
   const [userList, setUserList] = useState<User[]>([]);
 
   const [peerStates, heartbeats] = useRemoteAwareness({
