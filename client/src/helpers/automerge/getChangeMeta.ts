@@ -1,8 +1,6 @@
 import { Doc } from "@automerge/automerge-repo";
 
-import { Document, ChangeMeta, ChangePatch } from "../../types";
-
-import { ContentActionType } from "../../reducers/editorContentReducer";
+import { Document, ChangeMeta, ChangePatch, EditPayloadType } from "../../types";
 
 
 export function getChangeMeta(doc: Doc<Document>): ChangeMeta | null {
@@ -17,15 +15,15 @@ export function getChangeMeta(doc: Doc<Document>): ChangeMeta | null {
   const metaData: any = doc[metaSymbol];
 
   const patches: ChangePatch[] = metaData.mostRecentPatch?.patches.filter((patch: ChangePatch) => {
-    return patch.action !== ContentActionType.PUT
+    return patch.action !== EditPayloadType.PUT
   }).map((patch: ChangePatch) => {
-    if (patch.action === ContentActionType.DEL && !patch.length) // DEL events with no length are actually length 1
+    if (patch.action === EditPayloadType.DEL && !patch.length) // DEL events with no length are actually length 1
         patch.length = 1;
 
     patch.length = patch.length || patch.value.length || 0
 
     // @ts-ignore
-    patch.actionType = ContentActionType[patch.action.toUpperCase()];
+    patch.actionType = EditPayloadType[patch.action.toUpperCase()];
     return patch;
   }) || [];
 

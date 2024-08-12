@@ -1,5 +1,7 @@
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 
+import { Provider } from 'react-redux'
+
 import { Repo } from "@automerge/automerge-repo";
 import { RepoContext } from "@automerge/automerge-repo-react-hooks";
 
@@ -7,6 +9,8 @@ import { BroadcastChannelNetworkAdapter } from "@automerge/automerge-repo-networ
 import { BrowserWebSocketClientAdapter } from "@automerge/automerge-repo-network-websocket";
 
 import { rootLoader } from "./helpers/loaders/rootLoader";
+
+import { store } from "./redux/store";
 
 import { Wrapper } from "./components/layout/Wrapper";
 import { MonacoEditor } from "./components/editor/MonacoEditor";
@@ -36,7 +40,9 @@ export default function App() {
 
   return (
     <RepoContext.Provider value={repo}>
-      <RouterProvider router={router} />
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
     </RepoContext.Provider>
   );
 }

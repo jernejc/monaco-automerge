@@ -1,5 +1,5 @@
 
-import { ContentActionType } from "../reducers/editorContentReducer";
+import { ContentActionType } from "../redux/reducers/editorContentReducer";
 
 export type ChangePatch = {
   actionType: ContentActionType;

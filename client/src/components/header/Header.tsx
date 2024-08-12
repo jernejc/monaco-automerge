@@ -70,7 +70,7 @@ export function Peers({ userList }: { userList: User[] }) {
 
           return (
             <div className="flex w-8 h-8 items-center justify-center text-2xl rounded-full overflow-hidden"
-              key={user.id}
+              key={`${user.id}`}
               role="figure"
               style={{ background: user.color }}>
               {user.name.slice(0, 1).toUpperCase()}

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useRouteLoaderData, useParams, Outlet } from "react-router-dom";
 
 import { editor, Position, Selection } from "monaco-editor";
@@ -7,24 +7,28 @@ import Editor, { OnChange, OnMount } from "@monaco-editor/react";
 import { DocHandle, updateText } from "@automerge/automerge-repo";
 import { useDocument, useLocalAwareness, useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
-import { SelectionActionType, selectionReducer } from "../../reducers/selectionReducer";
-import { WidgetActionType, widgetsReducer } from "../../reducers/widgetsReducer";
-import { editorContentReducer } from "../../reducers/editorContentReducer";
+import { Document, User, ChangeMeta, Peer, ChangePatch, PayloadType, EventLogType } from "../../types";
 
-import { Document, User, ChangeMeta, Peer, ChangePatch } from "../../types";
-import { config } from "../../config";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { executeEdit, widgetUpdate, selectionUpdate, addEventLog, removeEventLog, eventLogLocal, eventLogRemote } from "../../redux/editorSlice";
 
-import { removeEventLog, addEventLog, EventLogType } from "../../helpers/eventLog";
 import { getChangeMeta } from "../../helpers/automerge/getChangeMeta";
 import { getActivePeers } from "../../helpers/automerge/getActivePeers";
 
 import { CircularSpinner } from "./CircularSpinner";
+
+import { config } from "../../config";
 
 
 export function MonacoEditor() {
 
   const { changeId } = useParams<"changeId">() as { changeId: string };
   const { user, handle } = useRouteLoaderData("root") as { user: User, handle: DocHandle<Document> };
+
+  const dispatch = useAppDispatch()
+
+  const eventsLocal = useAppSelector(eventLogLocal);
+  const eventsRemote = useAppSelector(eventLogRemote);
 
   const [doc, changeDoc] = useDocument<Document>(handle.url);
 
@@ -42,11 +46,6 @@ export function MonacoEditor() {
   });
 
   const editorRef = useRef<any>(null);
-  const editEvents = useRef<EventLogType[]>([]);
-
-  const [widgets, dispatchWidgets] = useReducer(widgetsReducer, []);
-  const [selections, dispatchSelections] = useReducer(selectionReducer, []);
-  const [head, dispatchEditorContent] = useReducer(editorContentReducer, "");
 
   const updateLocalPosition = (editor: editor.ICodeEditor) => {
     const position: Position | null = editor.getPosition();
@@ -65,14 +64,17 @@ export function MonacoEditor() {
   }
 
   const handleEditorChange: OnChange = (value: string | undefined, ev: editor.IModelContentChangedEvent) => {
+    if (eventsRemote.length > 0) {
+      dispatch(removeEventLog(EventLogType.REMOTE));
+      return;
+    }
 
-    if (removeEventLog(editEvents.current, EventLogType.REMOTE)) return;
     if (ev.isFlush) return;
     if (value === undefined) return;
 
     changeDoc(doc => updateText(doc, ["text"], value));
 
-    addEventLog(editEvents.current, EventLogType.LOCAL);
+    dispatch(addEventLog(EventLogType.LOCAL));
   }
 
   const handleEditorMount: OnMount = (editor: editor.ICodeEditor) => {
@@ -92,15 +94,14 @@ export function MonacoEditor() {
   }
 
   const clearUnactivePeers = (activePeers?: Peer[]) => {
-    dispatchWidgets({
-      type: WidgetActionType.CLEAR_UNACTIVE,
+    dispatch(widgetUpdate({
+      type: PayloadType.CLEAR_UNACTIVE,
       activePeers: activePeers || []
-    });
-
-    dispatchSelections({
-      type: SelectionActionType.CLEAR_UNACTIVE,
+    }));
+    dispatch(selectionUpdate({
+      type: PayloadType.CLEAR_UNACTIVE,
       activePeers: activePeers || []
-    });
+    }));
   }
 
   useEffect(() => {
@@ -111,20 +112,20 @@ export function MonacoEditor() {
         const { user, position, selection } = peer;
 
         if (position) {
-          dispatchWidgets({
-            type: WidgetActionType.UPSERT,
+          dispatch(widgetUpdate({
+            type: PayloadType.UPSERT,
             user,
             position,
             editor: editorRef.current
-          });
+          }));
         }
         if (selection) {
-          dispatchSelections({
-            type: SelectionActionType.UPSERT,
+          dispatch(selectionUpdate({
+            type: PayloadType.UPSERT,
             user,
             selection,
             editor: editorRef.current
-          });
+          }));
         }
       });
 
@@ -143,30 +144,27 @@ export function MonacoEditor() {
   }, [heartbeats]);
 
   useEffect(() => {
-    if (removeEventLog(editEvents.current, EventLogType.LOCAL))
-      return;
+    if (eventsLocal.length > 0) {
+      dispatch(removeEventLog(EventLogType.LOCAL));
+      return
+    }
 
     if (doc && editorRef.current) {
-      const currentText: string = editorRef.current.getValue();
-
-      if (currentText === doc.text) return;
-
       const changeMeta: ChangeMeta | null = getChangeMeta(doc);
 
+      if (doc.text === editorRef.current.getValue()) return;
       if (!changeMeta || changeMeta.patches.length === 0) return;
-      if (head === changeMeta?.head) return;
 
       changeMeta.patches.forEach((patch: ChangePatch) => {
-        dispatchEditorContent({
+        dispatch(executeEdit({
           user,
           type: patch.actionType,
           editor: editorRef.current,
-          events: editEvents.current,
           head: changeMeta.head,
           index: patch.path[1] as number,
           value: patch.value,
           length: patch.length
-        });
+        }));
       });
     }
   }, [doc, editorRef.current]);

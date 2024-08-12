@@ -9,6 +9,8 @@ export function getActivePeers(peerStates: any, heartbeats: any): Peer[] {
 
     if (!position && !selection)
       continue
+    if (activePeers.find((activePeer) => activePeer.user.id === user.id))
+      continue
 
     const lastSeen: number = heartbeats[peer];
     const currentTime: number = Date.now();
