@@ -1,10 +1,6 @@
 import { editor, IDisposable, Position } from "monaco-editor";
 import { User } from "../../types";
 
-type Configuration = {
-  lineHeight: number;
-}
-
 /**
  * 
  * This class implements a Monaco Content Widget to render a remote user"s
@@ -176,6 +172,10 @@ export class CursorWidget implements editor.IContentWidget, IDisposable {
 }
 
 // support for older versions
+
+type Configuration = {
+  lineHeight: number;
+}
 
 function getConfiguration(editorInstance: editor.ICodeEditor): Configuration {
   if (typeof (editorInstance as any).getConfiguration === "function") {

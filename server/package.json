@@ -6,14 +6,17 @@
   "author": "Jernej",
   "scripts": {
     "dev": "tsx src/index.ts",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "build": "tsc",
     "serve": "node dist/index.js"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/express": "^4.17.21",
     "@types/node": "^22.0.2",
     "@types/ws": "^8.5.12",
-    "express": "^4.19.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.4",
     "tsx": "^4.16.5",
     "typescript": "^5.5.4"
   },
@@ -22,6 +25,7 @@
     "@automerge/automerge-repo": "^1.2.1",
     "@automerge/automerge-repo-network-websocket": "^1.2.1",
     "@automerge/automerge-repo-storage-nodefs": "^1.2.1",
+    "express": "^4.19.2",
     "glob": "^11.0.0",
     "ws": "^8.18.0"
   }

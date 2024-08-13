@@ -38,7 +38,7 @@ export function MonacoEditor() {
     handle,
     userId: user.id,
     initialState: {},
-    heartbeatTime: 5000
+    heartbeatTime: config.defaults.heartbeatTime
   });
 
   const [peerStates, heartbeats] = useRemoteAwareness({
