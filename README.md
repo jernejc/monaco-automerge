@@ -7,7 +7,7 @@
 </p>
 
 <h1 align="center">
-Wolf Editor - Collaborative Code Editing
+  Wolf Editor - Collaborative Code Editing
 </h1>
 
 A collaborative code editor built using [Monaco Editor](https://microsoft.github.io/monaco-editor/) and [Automerge](https://automerge.org/). Supports multiple users editing the same document simultaneously, with features like real-time synchronization, offline editing, and cursor/selection sharing.
@@ -57,20 +57,31 @@ This will start both the client and server containers.
     ```
     [host]/automerge:336uk9sp24iLqxcgi5k7BvV48a9f
     ```
-4. Link to preview states:
+4. Link to snapshot with undo/redo option:
     ```
     [host]/automerge:336uk9sp24iLqxcgi5k7BvV48a9f/[stateHash]
     ```
 
-## Tests
+## Run Tests
+
+### e2e tests
 
 Make sure docker-compose is running **all containers**.
 
-1. Run from the `tests` folder:
-    ```
-    npm run setup
-    npm run test
-    ```
+Run in `tests` folder:
+  ```
+  npm run setup
+  npm run test
+  ```
+### Client & Server specific tests
+
+Make sure you have **all depedencies** installed.
+
+Run unit and integration tests from the `client` or `server` folder:
+  ```
+  npm install
+  npm run test
+  ```
 
 ## Architecture
 
