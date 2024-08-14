@@ -11,6 +11,7 @@ import { PeerId, Repo } from "@automerge/automerge-repo";
 import { NodeWSServerAdapter } from "@automerge/automerge-repo-network-websocket";
 import { NodeFSStorageAdapter } from "@automerge/automerge-repo-storage-nodefs";
 
+
 let isReady: boolean = false;
 
 const readyResolvers: ((value: any) => void)[] = [];
