@@ -1,6 +1,6 @@
 {
   "name": "qa-editor-tests",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "author": "Jernej",
   "scripts": {
     "setup": "npm install && npx playwright install",

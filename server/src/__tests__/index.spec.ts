@@ -11,6 +11,7 @@ import { ready, close } from '../index';
 const PORT: number = process.env.PORT !== undefined ? parseInt(process.env.PORT) : 3080;
 
 describe("Sync Server Setup and Connect", () => {
+
   beforeAll(async () => {
     await ready();
   });
@@ -23,6 +24,7 @@ describe("Sync Server Setup and Connect", () => {
     const ws = new WebSocket(`ws://localhost:${PORT}`);
 
     ws.on("open", () => {
+      ws.close();
       done();
     })
   });
@@ -30,18 +32,18 @@ describe("Sync Server Setup and Connect", () => {
   test("can sync a document with the server and get back the same document", async () => {
     const repo: Repo = new Repo({
       // @ts-ignore
-      network: [new BrowserWebSocketClientAdapter(`ws://localhost:${PORT}`)],
+      network: [new BrowserWebSocketClientAdapter(`ws://localhost:${PORT}`)]
     });
 
     const repo2: Repo = new Repo({
       // @ts-ignore
-      network: [new BrowserWebSocketClientAdapter(`ws://localhost:${PORT}`)],
+      network: [new BrowserWebSocketClientAdapter(`ws://localhost:${PORT}`)]
     });
 
     const handle = repo.create();
 
     handle.change((doc: any) => {
-      doc.test = "hello world"
+      doc.test = "hello world";
     });
 
     const handle2 = repo2.find(handle.url);

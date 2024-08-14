@@ -57,7 +57,7 @@ export const getHead = (state: RootState) => state.editor.head
 export const getEventLogLocal = (state: RootState) => state.editor.eventLog.filter((log: EventLogType) => log === EventLogType.LOCAL)
 export const getEventLogRemote = (state: RootState) => state.editor.eventLog.filter((log: EventLogType) => log === EventLogType.REMOTE)
 
-// Content Edit Thunks
+// Content Edit Thunk
 
 export const executeEdit = (payload: EditPayload): AppThunk => {
   return (dispatch) => {
@@ -107,7 +107,7 @@ export const executeEdit = (payload: EditPayload): AppThunk => {
   }
 }
 
-// Widget Thunks
+// Widget Thunk
 
 export const widgetUpdate = (payload: WidgetPayload): AppThunk => {
   return (dispatch, getState) => {
@@ -154,7 +154,7 @@ function findExistingWidget(items: CursorWidget[], user: User): CursorWidget | u
   return items.find((t) => t.user.id === user.id);
 }
 
-// Selection Thunks
+// Selection Thunk
 
 export const selectionUpdate = (payload: SelectionPayload): AppThunk => {
   return (dispatch, getState) => {

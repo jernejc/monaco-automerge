@@ -4,6 +4,8 @@ test('has the correct title', async ({ page }) => {
   await page.goto('/');
 
   await expect(page).toHaveTitle(/Wolf Editor - Collaboration Made Easy/);
+
+  await page.close();
 });
 
 test('enter text in monaco editor and make a screenshot', async ({ page }) => {
@@ -15,10 +17,10 @@ test('enter text in monaco editor and make a screenshot', async ({ page }) => {
   await page.keyboard.type('This is a line of text\n');
   await page.keyboard.type('This is another line of text\n');
 
-  await page.screenshot({ path: `test-results/example.png` });
+  await page.close();
 });
 
-test('two user collaborating', async ({ browser }) => {
+test('two users collaborating', async ({ browser }) => {
   const context = await browser.newContext();
 
   const user1Page = await context.newPage();
@@ -34,8 +36,6 @@ test('two user collaborating', async ({ browser }) => {
   await user1Page.keyboard.type('I\'m user 1. This is a line of text\n');
   await user1Page.keyboard.type('This is another line of text\n');
 
-  await user1Page.screenshot({ path: `test-results/user1.png` });
-
   const monacoEditor2 = user2Page.locator(".monaco-editor").first();
   await monacoEditor2.click();
 
@@ -43,10 +43,35 @@ test('two user collaborating', async ({ browser }) => {
   await user2Page.keyboard.type('I\'m user 2. This is a line of text\n');
   await user2Page.keyboard.type('This is another line of text\n');
 
-  await user2Page.screenshot({ path: `test-results/user2.png` });
+  await expect(user1Page.getByRole("figure")).toHaveCount(1);
+  await expect(user2Page.getByRole("figure")).toHaveCount(1);
 
-  await expect(user1Page.getByRole("figure")).toBeVisible();
-  await expect(user2Page.getByRole("figure")).toBeVisible();
+  await context.close();
+});
+
+test('user should disconnect after timeout', async ({ browser }) => {
+  test.slow();
+
+  const context = await browser.newContext();
+
+  const user1Page = await context.newPage();
+  await user1Page.goto('/automerge:2faDyxnoGZ4MNd5JhTjc1wvFMMHK');
+
+  const user2Page = await context.newPage();
+  await user2Page.goto('/automerge:2faDyxnoGZ4MNd5JhTjc1wvFMMHK');
+
+  const monacoEditor1 = user1Page.locator(".monaco-editor").first();
+  await monacoEditor1.click();
+
+  const monacoEditor2 = user2Page.locator(".monaco-editor").first();
+  await monacoEditor2.click();
+
+  await expect(user1Page.getByRole("figure")).toHaveCount(1);
+  await expect(user2Page.getByRole("figure")).toHaveCount(1);
+
+  await user2Page.close();
+
+  await expect(user1Page.getByRole("figure")).toHaveCount(0, { timeout: 15000 });
 
   await context.close();
 });

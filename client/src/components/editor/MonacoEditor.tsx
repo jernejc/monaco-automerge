@@ -74,9 +74,8 @@ export function MonacoEditor() {
     if (ev.isFlush) return;
     if (value === undefined) return;
 
-    changeDoc(doc => updateText(doc, ["text"], value));
-
     dispatch(addEventLog(EventLogType.LOCAL));
+    changeDoc(doc => updateText(doc, ["text"], value));
   }
 
   const handleEditorMount: OnMount = (editor: editor.ICodeEditor) => {

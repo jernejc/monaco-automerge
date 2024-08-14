@@ -38,18 +38,18 @@ const PORT: number = process.env.PORT !== undefined ? parseInt(process.env.PORT)
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send(`👍 automerge-sync-server is running`)
+  res.send(`👍 automerge-sync-server is running`);
 });
 
 const server: Server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
   isReady = true;
-  readyResolvers.forEach((resolve) => resolve(true))
+  readyResolvers.forEach((resolve) => resolve(true));
 });
 
 server.on("upgrade", (request, socket, head) => {
   socketWS.handleUpgrade(request, socket, head, (socket) => {
-    socketWS.emit("connection", socket, request)
+    socketWS.emit("connection", socket, request);
   });
 });
 
@@ -58,11 +58,11 @@ export async function ready() {
     return true;
 
   return new Promise((resolve) => {
-    readyResolvers.push(resolve)
-  })
+    readyResolvers.push(resolve);
+  });
 }
 
 export function close() {
-  socketWS.close()
-  server.close()
+  socketWS.close();
+  server.close();
 }
