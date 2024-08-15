@@ -5,9 +5,9 @@ import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { State } from "@automerge/automerge";
 import { AnyDocumentId } from "@automerge/automerge-repo";
 
-import { Document } from "../../types";
+import { getHistoryLogs } from "@/helpers/automerge/getHistoryLogs";
 
-import { getHistoryLogs } from "../../helpers/automerge/getHistoryLogs";
+import { Document } from "@/types";
 
 
 export type HistorySidebarProps = {
@@ -38,7 +38,7 @@ export function HistorySidebar({ setViewHistory }: HistorySidebarProps) {
       </div>
       <div className="flex flex-col max-w-full max-h-[calc(100vh - 4rem)] overflow-y-auto">
         {history.map((state: State<Document>) =>
-          <Link className={`flex flex-col group hover:bg-neutral-700 px-3 py-2 cursor-pointer ${changeId === state.change.hash ? 'bg-neutral-700' : ''}`}
+          <Link className={`flex flex-col group hover:bg-neutral-700 px-3 py-2 cursor-pointer ${changeId === state.change.hash ? "bg-neutral-700" : ""}`}
             to={`/${docUrl}/${state.change.hash}`}
             key={state.change.hash}>
             <div className="flex flex-row items-center gap-2">

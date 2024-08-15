@@ -1,8 +1,8 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore } from "@reduxjs/toolkit";
 
-import { editorReducer } from "./slices/editor";
-import { userReducer } from "./slices/user";
+import { editorReducer } from "@/redux/slices/editor";
+import { userReducer } from "@/redux/slices/user";
 
 export const store = configureStore({
   reducer: {

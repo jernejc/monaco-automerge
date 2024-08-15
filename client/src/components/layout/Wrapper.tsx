@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import { Header } from "../header/Header";
-import { HistorySidebar } from "../history/Sidebar";
+import { Header } from "@/components/header/Header";
+import { HistorySidebar } from "@/components/history/Sidebar";
 
 
 export function Wrapper() {
@@ -12,7 +12,7 @@ export function Wrapper() {
 
   return (
     <div className="flex flex-row h-full w-full max-w-full">
-      <div className={`flex flex-col w-full ${viewHistory ? 'max-w-[calc(100vw-20rem)]' : ''}`}>
+      <div className={`flex flex-col w-full ${viewHistory ? "max-w-[calc(100vw-20rem)]" : ""}`}>
         <div>
           <Header setViewHistory={setViewHistory} />
         </div>

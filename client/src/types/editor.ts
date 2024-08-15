@@ -1,7 +1,7 @@
-import { CursorWidget } from "../helpers/monaco/cursor";
-import { SelectionDecoration } from "../helpers/monaco/selection";
+import { CursorWidget } from "@/helpers/monaco/cursor";
+import { SelectionDecoration } from "@/helpers/monaco/selection";
 
-import { EventLogType } from "./";
+import { EventLogType } from "@/types";
 
 
 export type EditorState = {

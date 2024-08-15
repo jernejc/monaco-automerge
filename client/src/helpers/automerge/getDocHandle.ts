@@ -1,7 +1,7 @@
 
 import { AnyDocumentId, DocHandle, Repo, isValidAutomergeUrl } from "@automerge/automerge-repo";
 
-import { Document } from "../../types";
+import { Document } from "@/types";
 
 export function getDocHandle({ repo, docUrl }: { repo: Repo, docUrl: string }): DocHandle<Document> {
   let handle: DocHandle<Document>;

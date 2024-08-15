@@ -1,7 +1,7 @@
 
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from "@jest/globals";
 
-import { getRecentChangeMeta } from "../getRecentChangeMeta";
+import { getRecentChangeMeta } from "@/helpers/automerge/getRecentChangeMeta";
 
 
 describe("getRecentChangeMeta", () => {
@@ -20,13 +20,13 @@ describe("getRecentChangeMeta", () => {
               action: "del",
               actionType: "del",
               length: 4,
-              path: ['text', 71]
+              path: ["text", 71]
             },
             {
               action: "splice",
               actionType: "splice",
               length: 8,
-              path: ['text', 94],
+              path: ["text", 94],
               value: "new text"
             }
           ],

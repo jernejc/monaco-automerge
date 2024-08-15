@@ -3,9 +3,9 @@ import { redirect } from "react-router-dom";
 
 import { DocHandle, Repo } from "@automerge/automerge-repo";
 
-import { Document } from "../types";
+import { Document } from "@/types";
 
-import { getDocHandle } from '../helpers/automerge/getDocHandle';
+import { getDocHandle } from "@/helpers/automerge/getDocHandle";
 
 
 export const rootLoader = (repo: Repo) => ({ params }: { params: any }) => {

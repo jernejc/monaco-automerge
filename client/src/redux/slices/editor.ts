@@ -4,12 +4,12 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 import { Range } from "monaco-editor";
 
-import { CursorWidget } from "../../helpers/monaco/cursor";
-import { SelectionDecoration } from "../../helpers/monaco/selection";
+import { CursorWidget } from "@/helpers/monaco/cursor";
+import { SelectionDecoration } from "@/helpers/monaco/selection";
 
-import { RootState, AppThunk } from "../store";
+import { RootState, AppThunk } from "@/redux/store";
 
-import { User, Peer, EditPayload, EditPayloadType, WidgetPayload, SelectionPayload, PayloadType, EventLogType, EditorState } from "../../types";
+import { User, Peer, EditPayload, EditPayloadType, WidgetPayload, SelectionPayload, PayloadType, EventLogType, EditorState } from "@/types";
 
 
 const initialState: EditorState = {

@@ -1,6 +1,5 @@
-
 import { editor, Range, IPosition, Selection } from "monaco-editor";
-import { User } from "../../types";
+import { User } from "@/types";
 
 /**
  * 

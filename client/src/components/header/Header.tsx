@@ -4,18 +4,18 @@ import { useRouteLoaderData } from "react-router-dom";
 import { DocHandle } from "@automerge/automerge-repo";
 import { useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
-import { useAppSelector } from "../../redux/hooks";
-import { getUser } from "../../redux/slices/user";
+import { useAppSelector } from "@/redux/hooks";
+import { getUser } from "@/redux/slices/user";
 
-import { User, Document } from "../../types";
+import { User, Document } from "@/types";
 
-import { getActivePeers } from "../../helpers/automerge/getActivePeers";
+import { getActivePeers } from "@/helpers/automerge/getActivePeers";
 
-import { Logo } from "./Logo";
-import { HistoryIcon } from "./HistoryIcon";
-import { UsersIcon } from "./UsersIcon";
+import { Logo } from "@/components/header/Logo";
+import { HistoryIcon } from "@/components/header/HistoryIcon";
+import { UsersIcon } from "@/components/header/UsersIcon";
 
-import { config } from "../../config";
+import { config } from "@/config";
 
 
 export type HeaderProps = {

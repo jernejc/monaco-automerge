@@ -1,8 +1,8 @@
 
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from "@jest/globals";
 
-import { getActivePeers } from "../getActivePeers";
-import { config } from '../../../config';
+import { getActivePeers } from "@/helpers/automerge/getActivePeers";
+import { config } from "@/config";
 
 
 describe("getActivePeers", () => {

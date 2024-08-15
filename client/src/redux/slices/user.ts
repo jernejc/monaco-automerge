@@ -4,7 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "../store";
 
-import { User } from "../../types";
+import { User } from "@/types";
 
 import { config } from "../../config";
 

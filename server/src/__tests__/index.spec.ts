@@ -1,11 +1,11 @@
 
-import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll } from "@jest/globals";
 import { WebSocket } from "ws"
 
 import { BrowserWebSocketClientAdapter } from "@automerge/automerge-repo-network-websocket";
 import { Repo } from "@automerge/automerge-repo"
 
-import { ready, close } from '../index';
+import { ready, close } from "../index";
 
 
 const PORT: number = process.env.PORT !== undefined ? parseInt(process.env.PORT) : 3080;

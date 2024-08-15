@@ -1,5 +1,5 @@
 import { editor, Position, Selection } from "monaco-editor";
-import { User, Peer } from "./";
+import { User, Peer } from "@/types";
 
 export enum PayloadType {
   UPSERT = "upsert",

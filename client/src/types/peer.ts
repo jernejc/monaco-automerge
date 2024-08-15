@@ -1,6 +1,6 @@
 import { Position, Selection } from "monaco-editor";
 
-import { User } from "./user";
+import { User } from "@/types";
 
 export type Peer = {
   user: User;

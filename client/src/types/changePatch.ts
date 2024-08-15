@@ -1,5 +1,5 @@
 
-import { EditPayloadType } from "../types/payload";
+import { EditPayloadType } from "@/types";
 
 export type ChangePatch = {
   type: EditPayloadType;

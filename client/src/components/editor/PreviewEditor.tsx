@@ -6,11 +6,11 @@ import { DiffEditor } from "@monaco-editor/react";
 import { AnyDocumentId, updateText } from "@automerge/automerge-repo";
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 
-import { getHashSnapshot } from "../../helpers/automerge/getHashSnapshot";
+import { getHashSnapshot } from "@/helpers/automerge/getHashSnapshot";
 
-import { Document } from "../../types";
+import { Document } from "@/types";
 
-import { CircularSpinner } from "./CircularSpinner";
+import { CircularSpinner } from "@/components/editor/CircularSpinner";
 
 
 export function PreviewEditor() {
@@ -22,11 +22,11 @@ export function PreviewEditor() {
 
   const [doc, changeDoc] = useDocument<Document>(docUrl);
 
-  const [statePreview, setStatePreview] = useState<string>('');
+  const [statePreview, setStatePreview] = useState<string>("");
 
   const revert = useCallback(() => {
     if (doc) {
-      changeDoc(currentDoc => updateText(currentDoc, ["text"], statePreview));
+      changeDoc((currentDoc: Document) => updateText(currentDoc, ["text"], statePreview));
       navigate(`/${docUrl}`)
     }
   }, [doc, statePreview]);

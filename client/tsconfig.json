@@ -1,11 +1,24 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
+  "compilerOptions": {
+    "inlineSourceMap": true,
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
     },
-    {
-      "path": "./tsconfig.node.json"
-    }
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx"
   ]
 }

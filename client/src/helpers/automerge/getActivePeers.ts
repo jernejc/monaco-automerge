@@ -1,5 +1,5 @@
-import { config } from '../../config';
-import { Peer } from '../../types';
+import { config } from "@/config";
+import { Peer } from "@/types";
 
 export function getActivePeers(peerStates: any, heartbeats: any): Peer[] {
   const activePeers: Peer[] = [];

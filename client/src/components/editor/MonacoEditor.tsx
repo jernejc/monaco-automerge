@@ -7,17 +7,17 @@ import Editor, { OnChange, OnMount } from "@monaco-editor/react";
 import { DocHandle, updateText } from "@automerge/automerge-repo";
 import { useDocument, useLocalAwareness, useRemoteAwareness } from "@automerge/automerge-repo-react-hooks";
 
-import { Document, ChangeMeta, Peer, ChangePatch, PayloadType, EventLogType } from "../../types";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { executeEdit, widgetUpdate, selectionUpdate, addEventLog, removeEventLog, getEventLogLocal, getEventLogRemote, getHead } from "@/redux/slices/editor";
+import { getUser } from "@/redux/slices/user";
 
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { executeEdit, widgetUpdate, selectionUpdate, addEventLog, removeEventLog, getEventLogLocal, getEventLogRemote, getHead } from "../../redux/slices/editor";
-import { getUser } from "../../redux/slices/user";
+import { getRecentChangeMeta, getActivePeers } from "@/helpers/automerge";
 
-import { getRecentChangeMeta, getActivePeers } from "../../helpers/automerge";
+import { CircularSpinner } from "@/components/editor/CircularSpinner";
 
-import { CircularSpinner } from "./CircularSpinner";
+import { Document, ChangeMeta, Peer, ChangePatch, PayloadType, EventLogType } from "@/types";
 
-import { config } from "../../config";
+import { config } from "@/config";
 
 
 export function MonacoEditor() {
@@ -75,7 +75,7 @@ export function MonacoEditor() {
     if (value === undefined) return;
 
     dispatch(addEventLog(EventLogType.LOCAL));
-    changeDoc(doc => updateText(doc, ["text"], value));
+    changeDoc((doc: Document) => updateText(doc, ["text"], value));
   }
 
   const handleEditorMount: OnMount = (editor: editor.ICodeEditor) => {

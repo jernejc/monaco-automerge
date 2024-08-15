@@ -1,4 +1,4 @@
-import { ChangePatch } from './changePatch'
+import { ChangePatch } from "src/types"
 
 export type ChangeMeta = {
   patches: ChangePatch[]

@@ -1,6 +1,6 @@
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 
-import { Provider } from 'react-redux'
+import { Provider } from "react-redux"
 
 import { Repo } from "@automerge/automerge-repo";
 import { RepoContext } from "@automerge/automerge-repo-react-hooks";
@@ -8,22 +8,24 @@ import { RepoContext } from "@automerge/automerge-repo-react-hooks";
 import { BroadcastChannelNetworkAdapter } from "@automerge/automerge-repo-network-broadcastchannel";
 import { BrowserWebSocketClientAdapter } from "@automerge/automerge-repo-network-websocket";
 
-import { rootLoader } from "./loaders/rootLoader";
+import { rootLoader } from "@/loaders/rootLoader";
 
-import { store } from "./redux/store";
+import { store } from "@/redux/store";
 
-import { Wrapper } from "./components/layout/Wrapper";
-import { MonacoEditor } from "./components/editor/MonacoEditor";
-import { PreviewEditor } from "./components/editor/PreviewEditor";
+import { Wrapper } from "@/components/layout/Wrapper";
+import { MonacoEditor } from "@/components/editor/MonacoEditor";
+import { PreviewEditor } from "@/components/editor/PreviewEditor";
 
-import { config } from "./config";
+import { config } from "@/config";
 
 
 export default function App() {
 
   const repo: Repo = new Repo({
     network: [
+      // @ts-ignore
       new BroadcastChannelNetworkAdapter(),
+      // @ts-ignore
       new BrowserWebSocketClientAdapter(config.defaults.wsConnection),
     ],
   });

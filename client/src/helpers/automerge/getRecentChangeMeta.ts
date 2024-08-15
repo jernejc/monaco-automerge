@@ -1,7 +1,7 @@
 import { Patch } from "@automerge/automerge";
 import { Doc } from "@automerge/automerge-repo";
 
-import { Document, ChangeMeta, ChangePatch, EditPayloadType } from "../../types";
+import { Document, ChangeMeta, ChangePatch, EditPayloadType } from "@/types";
 
 export function getRecentChangeMeta(doc: Doc<Document>): ChangeMeta | null {
   const metaSymbol: symbol | undefined = Object.getOwnPropertySymbols(doc).find(
