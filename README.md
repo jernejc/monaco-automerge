@@ -44,7 +44,7 @@ Make sure you have [Docker](https://www.docker.com/products/docker-desktop) inst
 
 2. Start the application using Docker Compose:
     ```
-    docker-compose up
+    docker-compose up --build
     ```
 
 This will start both the client and server containers.

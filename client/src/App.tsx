@@ -2,13 +2,10 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 
 import { Provider } from "react-redux"
 
-import { Repo } from "@automerge/automerge-repo";
-import { RepoContext } from "@automerge/automerge-repo-react-hooks";
-
-import { BroadcastChannelNetworkAdapter } from "@automerge/automerge-repo-network-broadcastchannel";
-import { BrowserWebSocketClientAdapter } from "@automerge/automerge-repo-network-websocket";
-
 import { rootLoader } from "@/loaders/rootLoader";
+
+import { Repo } from "@automerge/automerge-repo";
+import { useRepo } from "@automerge/automerge-repo-react-hooks";
 
 import { store } from "@/redux/store";
 
@@ -16,20 +13,10 @@ import { Wrapper } from "@/components/layout/Wrapper";
 import { MonacoEditor } from "@/components/editor/MonacoEditor";
 import { PreviewEditor } from "@/components/editor/PreviewEditor";
 
-import { config } from "@/config";
-
-
 export default function App() {
 
-  const repo: Repo = new Repo({
-    network: [
-      // @ts-ignore
-      new BroadcastChannelNetworkAdapter(),
-      // @ts-ignore
-      new BrowserWebSocketClientAdapter(config.defaults.wsConnection),
-    ],
-  });
-
+  const repo: Repo = useRepo();
+  
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Wrapper />} loader={rootLoader(repo)} id="root">
@@ -41,10 +28,8 @@ export default function App() {
   );
 
   return (
-    <RepoContext.Provider value={repo}>
-      <Provider store={store}>
-        <RouterProvider router={router} />
-      </Provider>
-    </RepoContext.Provider>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   );
 }
