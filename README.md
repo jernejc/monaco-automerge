@@ -34,8 +34,8 @@ Make sure you have [Docker](https://www.docker.com/products/docker-desktop) inst
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/jernejc/qawolf-collab-editor
-    cd qawolf-collab-editor
+    git clone git@github.com:jernejc/monaco-automerge.git
+    cd monaco-automerge
     ```
 
 2. Start the application using Docker Compose:
