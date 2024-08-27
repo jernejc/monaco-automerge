@@ -1,19 +1,17 @@
 <sub>README.md</sub>
 
-<p align="center" style="margin: 40px 0px">
-  <a href="https://www.qawolf.com/">
-    <img alt="QA Wolf Logo" src="./assets/wolf-logo-dark.png" width="170" />
-  </a>
+<p align="center" style="margin: 40px 0px 30px">
+  <img alt="Logo" src="./assets/editor-logo.png" width="170" />
 </p>
 
 <h1 align="center">
-  Wolf Editor - Collaborative Code Editing
+  Collaborative Code Editing
 </h1>
 
 A collaborative code editor built using [Monaco Editor](https://microsoft.github.io/monaco-editor/) and [Automerge](https://automerge.org/). Supports multiple users editing the same document simultaneously, with features like real-time synchronization, offline editing, and cursor/selection sharing.
 
 <p align="center">
-  <img alt="Editor Demo" src="./assets/qa-wolf-demo_4.gif" />
+  <img alt="Editor Demo" src="./assets/demo.gif" />
 </p>
 
 ## Key Features
@@ -22,9 +20,7 @@ A collaborative code editor built using [Monaco Editor](https://microsoft.github
 - Cursor and selection sharing between users.
 - Peer-to-peer and WebSocket-based synchronization.
 - Offline support with local changes synchronization once the connection is restored.
-- In-depth insights and analytics.
-- Undo/Redo functionality.
-- Scalable architecture.
+- Revert to snapshot hash functionality.
 
 ## Getting Started
 
@@ -82,10 +78,6 @@ Run unit and integration tests from the `client` or `server` folder:
   npm install
   npm run test
   ```
-
-## Architecture
-
-For a detailed architecture overview, please refer to the [architecture documentation](./docs/architecture.md).
 
 ## Relevant Projects
 

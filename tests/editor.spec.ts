@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('has the correct title', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page).toHaveTitle(/Wolf Editor - Collaboration Made Easy/);
+  await expect(page).toHaveTitle(/Collab Editor - Collaboration Made Easy/);
 
   await page.close();
 });

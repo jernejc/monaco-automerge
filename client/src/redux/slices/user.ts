@@ -2,11 +2,11 @@ import { faker } from "@faker-js/faker";
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { RootState } from "../store";
+import { RootState } from "@/redux/store";
 
 import { User } from "@/types";
 
-import { config } from "../../config";
+import { config } from "@/config";
 
 const initialState: User = {
   id: faker.string.uuid(),
